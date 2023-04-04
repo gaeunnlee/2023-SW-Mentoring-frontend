@@ -1,0 +1,58 @@
+// 색상 등 테마 작성하는 파일
+import { DefaultTheme } from 'styled-components';
+
+export const theme: DefaultTheme = {
+  colors: {
+    primary: '#1D64AA',
+    secondary: '#004898',
+    accent: '#1D64AA',
+    blur: '#F2F6F9',
+    white: '#FFFFFF',
+    gray020: '#F9F9F9',
+    gray040: '#F2F3F5',
+    gray050: '#EBEDF0',
+    gray100: '#E1E3E6',
+    gray200: '#C4C8CC',
+    gray300: '#AAAEB3',
+    gray400: '#909499',
+    gray500: '#76787A',
+    gray600: '#5D5F61',
+    gray700: '#454647',
+    gray800: '#2C2D2E',
+    gray900: '#19191A',
+    red: '#B35141',
+    blue: '#0022F5',
+  },
+  fonts: {
+    weight: {
+      thin: 100,
+      light: 300,
+      regular: 400,
+      medium: 500,
+      bold: 700,
+      black: 900,
+    },
+    size: {
+      xs: '0.75rem',
+      sm: '0.875rem',
+      base: '1rem',
+      md: '1.125rem',
+      lg: '1.25rem',
+      xl: '1.5rem',
+      xxl: '2rem',
+      x3xl: '3rem',
+      x4xl: '4rem',
+      x5xl: '5rem',
+      x6xl: '6rem',
+      x7xl: '7rem',
+      x8xl: '8rem',
+      x9xl: '9rem',
+      x10xl: '10rem',
+    },
+  },
+  media: {
+    mobile: '@media (max-width: 767px)',
+    tablet: '@media (min-width: 767px) and (max-width: 1280px)',
+    desktop: '@media (min-width: 1280px)',
+  },
+};
