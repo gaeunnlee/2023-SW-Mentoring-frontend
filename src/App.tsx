@@ -3,17 +3,17 @@ import { ThemeProvider } from "styled-components";
 import { GlobalStyles } from "./styles/GlobalStyles";
 import { theme } from "./styles/Theme";
 import Router from "./Router";
-import { RecoilRoot } from "recoil";
+import { LoginStateAtom } from './state/LoginState';
+import { useRecoilValue } from "recoil";
 
 function App() {
+  const isLoggedIn = useRecoilValue(LoginStateAtom).state;
   return (
-    <RecoilRoot>
       <ThemeProvider theme={theme}>
         <GlobalStyles />
         <Router />
       </ThemeProvider>
-    </RecoilRoot>
-  );
+  )
 }
 
 export default App;
