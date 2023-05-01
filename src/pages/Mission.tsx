@@ -76,7 +76,7 @@ const ListLeft = styled.div`
 const MissionName = styled.p`
     margin: 3px 0 0 2px;
     font-size: 20px;
-    color: #555;
+    color: #000;
 `;
 const MissionCate = styled.div`
     padding: 10px 0;

@@ -14,8 +14,14 @@ import Team from "./pages/Team";
 import Setting from "./pages/Setting";
 import TeamDetail from "./pages/TeamDetail";
 import MissionDetail from "./pages/MissionDetail";
+import MyMission from "./pages/MyMission";
+import PostDetail from "./pages/PostDetail";
+import { useRecoilValue } from "recoil";
+import { LoginStateAtom } from "./state/LoginState";
 
 export default function Router() {
+  const token = useRecoilValue(LoginStateAtom)
+  const isLoggedIn = token.accessToken > 0
   return (
     <BrowserRouter>
       <Nav />
@@ -25,9 +31,11 @@ export default function Router() {
         <Route path="/mission" element={<Mission />} />
         <Route path="/mission/:missionId" element={<MissionDetail />} />
         <Route path="/post" element={<Post />} />
+        <Route path={`/post/:postId`} element={<PostDetail />} />
         <Route path="/team/" element={<Team />} />
         <Route path={`/team/:teamId`} element={<TeamDetail />} />
         <Route path="/setting" element={<Setting />} />
+        <Route path="/my-mission" element={<MyMission />} />
       </Routes>
     </BrowserRouter>
   );

@@ -5,21 +5,6 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import { useLocation } from "react-router-dom";
 
-const data = {
-  id: 4,
-  userName_mentor: "차현민",
-  teamName: "팀1",
-  mentee: "윤태현,곽동윤,김한이",
-  score: 40,
-  completedMission: [
-    "도서관에서 공부하기",
-    "단국대 앞에서 인생네컷 찍기",
-    "아무 술집에서든 가능",
-    "볼링 2게임 이상",
-    "2게임 이상 치기",
-  ],
-};
-
 const Container = styled.div`
   padding: 10px 0;
   display: flex;
@@ -122,7 +107,7 @@ export default function TeamDetail() {
   
   return (
     <>
-      <Banner title={data.teamName} prev />
+      <Banner title={team?.teamName || "null"} prev />
       <Block>
         <Container>
           <TeamCard>
@@ -132,7 +117,7 @@ export default function TeamDetail() {
             </Score>
             <Member>
               <Mentor>{team?.userName_mentor}</Mentor>
-              {data?.mentee?.split(',').map(name => {return(
+              {team?.mentee?.split(',').map(name => {return(
                 <span>{name}</span>
               )})}
             </Member>

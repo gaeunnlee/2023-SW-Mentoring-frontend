@@ -9,6 +9,7 @@ import axios from "axios";
 import { useRecoilValue } from "recoil";
 import { LoginStateAtom } from "../state/LoginState";
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 const Form = styled.form`
   padding: 15px 5px;
@@ -60,6 +61,39 @@ const ContentsInput = styled.textarea`
     border: 2px solid #fff;
   }
 `;
+const DifficultyContainer = styled.div`
+  margin: 20px 0 10px;
+  display: flex;
+  gap: 10px;
+`
+const DifficultyLabel = styled.label`
+  cursor: pointer;
+  border: solid 2px #b2dd94;
+  background-color: #fff;
+  padding: 8px;
+  border-radius: 5px;
+  &.difficultySelected {
+    background-color: #b2dd94; 
+  }
+`;
+const DifficultyInput = styled.input.attrs({ type: "radio" })`
+  display: none;
+`;
+const MissionsContainer = styled.div`
+  
+`
+const MissionLabel = styled.label`
+  display: flex;
+  flex-direction: column;
+  cursor: pointer;
+  &.missionSelected span {
+    display: inline;
+    background-color: #b2dd94; 
+  }
+`
+const MissionInput = styled.input.attrs({ type: "radio"})`
+  display: none;
+`
 const FileContainer = styled.div``;
 const FileUploadWrapper = styled.div`
   margin-top: 20px;
@@ -123,11 +157,19 @@ const FileUploadLabel = styled.label`
   height: 50px;
   text-align: center;
   box-sizing: border-box;
+  cursor: pointer;
 `;
 const FileUploadBtn = styled.input.attrs({ type: "file" })`
   display: none;
 `;
+const UploadedFileContainer = styled.div`
+  font-size: 12px;
+`
+const UploadedFileItem = styled.p`
+  
+`
 const PostBtn = styled.input.attrs({ type: "submit" })`
+  cursor: pointer;
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -172,15 +214,64 @@ type FormProps = {
   files: [];
   missionId: number;
 };
+
+interface DifficultiesProps {
+  id: string;
+  name: string;
+}
+
+interface MissionsProps {
+  bonusList:[];
+  category:string;
+  description:string;
+  id:number;
+  info:string;
+  name:string;
+  point:number;
+}
+interface selectedMissionProps {
+  id: number;
+  name: string;
+}
+
 export default function Post() {
-  const accessToken = useRecoilValue(LoginStateAtom)
+  const token = useRecoilValue(LoginStateAtom);
   const [inputState, setInputState] = useState<FormProps>({
-    title: '',
-    body: '',
+    title: "",
+    body: "",
     files: [],
-    missionId: 0
+    missionId: 0,
   });
+  const [difficulties, getDifficulties] = useState<DifficultiesProps[]>();
+  const [missions, setMissions] = useState<MissionsProps[]>()
+  const [selectedMission, setSelectedMission] = useState<selectedMissionProps>({
+    id: 0,
+    name: ''
+  });
+  const [inputDefault, setInputDefault] = useState(false)
+  const [filesArray, setFilesArray] = useState([''])
+  const navigate = useNavigate();
+  const getMission = (event: React.MouseEvent<HTMLInputElement, MouseEvent>) => {
+    const selected = event.currentTarget.value
+    axios({
+      method: "get",
+      url: `http://193.123.241.9:8080/missions/difficulty/${selected}`,
+    }).then(function (response) {
+      setMissions(response.data.content)
+    });
+  }
   const formData = new FormData();
+  useEffect(() => {
+    if (!(token.accessToken.length > 0)) {
+      navigate("/login")
+    }
+    axios({
+      method: "get",
+      url: "http://193.123.241.9:8080/missions/difficulty",
+    }).then(function (response) {
+      getDifficulties(response.data);
+    });
+  }, []);
   const submitHandler = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
   };
@@ -195,35 +286,75 @@ export default function Post() {
   // });
   const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    console.log(formData.get('title'))
-    console.log(formData.get('body'))
+    console.log(formData.get("title"));
+    console.log(formData.get("body"));
+    console.log(formData.getAll("files"));
+    if (inputState.title.length === 0) {
+      alert("제목을 입력해주세요");
+    } else if (inputState.body.length === 0) {
+      alert("내용을 입력해주세요");
+    }
+    else if (selectedMission.id === 0) {
+      alert("미션을 선택해주세요");
+    }
     try {
-      const { data } = await axios({
+      await axios({
         method: "post",
-        url: "http://193.123.241.9:8080/register/13/register",
+        url: `http://193.123.241.9:8080/register/${selectedMission.id}/register`,
         headers: {
           "Content-Type": "multipart/form-data",
-          Authorization: `Bearer ${accessToken}`
+          Authorization: `Bearer ${token.accessToken}`,
         },
         data: formData,
+      }).then((response) => {
+        alert("글이 등록되었습니다")
+        navigate("/")
       });
     } catch (e) {
       console.log(e);
     }
   };
-  const onInputHandler = (e: React.ChangeEvent<HTMLInputElement> | React.ChangeEvent<HTMLTextAreaElement>) => {
+  const onInputHandler = (
+    e:
+      | React.ChangeEvent<HTMLInputElement>
+      | React.ChangeEvent<HTMLTextAreaElement>
+  ) => {
     const { name, value } = e.target;
-    setInputState( (prev:any) =>( {
+    setInputState((prev: any) => ({
       ...prev,
-      [name]: value
+      [name]: value,
     }));
+  };
+  const handleFile = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setFilesArray([])
+    const files = Array.from(e.target.files || []);
+    console.log(files[0].name)
+    files.forEach((f, index) => {
+      formData.append("files", f);
+      setFilesArray( prev => [...prev, f.name])
+    });
     
+  };
+  useEffect(() => {
+    formData.append("title", inputState.title);
+    formData.append("body", inputState.body);
+    console.log(typeof inputState.files);
+  }, [onInputHandler]);
+
+  const handleSelected = (e:React.MouseEvent<HTMLInputElement, MouseEvent>) => {
+    const inputName = e.currentTarget.name
+    console.log(e.currentTarget)
+    const originSelected = document.querySelectorAll(`.${inputName}Selected`);
+    if (originSelected.length >= 1 ) {
+        originSelected[0].classList.remove(`${inputName}Selected`)
+    }
+    e.currentTarget.parentElement?.classList.add(`${inputName}Selected`)
+    setInputDefault(false)
   }
+  
   useEffect(()=>{
-    formData.append('title', inputState.title)
-    formData.append('body', inputState.body)
-    
-  },[onInputHandler])
+    console.log(selectedMission)
+  },[selectedMission])
   return (
     <>
       <Banner title="글쓰기" prev />
@@ -231,11 +362,56 @@ export default function Post() {
         <Form id="form" onSubmit={(event) => onSubmit(event)}>
           <InputContainer>
             <Label>미션</Label>
-            <Input name="mission" onChange={onInputHandler}/>
+            <Input 
+              name="missionId" 
+              onChange={onInputHandler}
+              placeholder="아래 난이도를 눌러 선택해주세요"
+              value={selectedMission.name}
+              disabled
+            />
+            <DifficultyContainer>
+            {difficulties?.map((item) => {
+              return (
+                <DifficultyLabel>
+                  <DifficultyInput 
+                    name="difficulty" 
+                    value={item.id} 
+                    onClick={(e) => {
+                      getMission(e)
+                      handleSelected(e)
+                    }}
+                  />
+                  {item.name}
+                </DifficultyLabel>
+              );
+            })}
+            </DifficultyContainer>
+            <MissionsContainer>
+              { missions?.map( (item) => { return (
+                <MissionLabel>
+                  <MissionInput 
+                    name="mission"
+                    className="mission"
+                    value={`${item.id}&${item.name}`}
+                    checked={inputDefault}
+                    onClick={(e) => {
+                      handleSelected(e)
+                      setSelectedMission({
+                        id: Number(e.currentTarget.value.split('&')[0]),
+                        name: e.currentTarget.value.split('&')[1]
+                      })
+                    }}
+                  />
+                  <span>
+                    {item.name}
+                  </span>
+                </MissionLabel>
+              )})}
+            </MissionsContainer>
           </InputContainer>
           <InputContainer>
             <Label>제목</Label>
-            <Input name="title" onChange={onInputHandler}/>
+            <Input name="title" onChange={onInputHandler} />
           </InputContainer>
           <InputContainer>
             <Label>내용</Label>
@@ -246,9 +422,20 @@ export default function Post() {
             <FileUploadWrapper>
               <AiOutlineCloudUpload />
               <FileUploadText>인증 사진을 업로드해주세요!</FileUploadText>
+              <UploadedFileContainer>
+                {filesArray.map(item => {return(
+                  <UploadedFileItem>{item}</UploadedFileItem>
+                )})}
+              </UploadedFileContainer>
               <FileUploadLabel htmlFor="upload">
                 +
-                <FileUploadBtn name="files" id="upload" accept="image/*" multiple onChange={onInputHandler}/>
+                <FileUploadBtn
+                  name="files"
+                  id="upload"
+                  accept="image/*"
+                  multiple
+                  onChange={handleFile}
+                />
               </FileUploadLabel>
             </FileUploadWrapper>
           </FileContainer>

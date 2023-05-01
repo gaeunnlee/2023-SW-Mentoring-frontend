@@ -56,6 +56,7 @@ const LoginBtn = styled.input.attrs({ type: "submit" })`
   background: linear-gradient(139.68deg, #f0c268 5.07%, #fd9569 117.95%);
   border-radius: 10px;
   color: #fff;
+  cursor: pointer;
 `;
 const ErrorMsg = styled.p`
   font-size: 15px;
@@ -94,7 +95,6 @@ export default function Login() {
     resolver: yupResolver(schema),
   });
   const onSubmit: SubmitHandler<FormProps> = async (loginData) => {
-    alert(JSON.stringify(loginData));
     try {
       const { data } = await axios({
         method: "post",
@@ -111,7 +111,7 @@ export default function Login() {
       })})
       navigate('/')
     } catch (e) {
-      console.log(e);
+      alert("아이디 또는 비밀번호가 잘못되었습니다")
     }
   };
   useEffect(()=>{

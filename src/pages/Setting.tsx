@@ -3,6 +3,7 @@ import Block from "../components/Block";
 import Banner from "../components/Banner/Banner";
 import { FiLogIn } from "react-icons/fi";
 import { CgProfile } from "react-icons/cg";
+import { BsFillBookmarkCheckFill } from "react-icons/bs";
 import { Link } from "react-router-dom";
 import { useRecoilValue, useSetRecoilState } from "recoil";
 import { LoginStateAtom } from "../state/LoginState";
@@ -39,6 +40,10 @@ const LoginIcon = styled(Icon)`
 const ProfileIcon = styled(Icon)`
   color: #609ad3;
   background-color: #e3f1ff;
+`;
+const MissionIcon = styled(Icon)`
+  color: #6240AE;
+  background-color: #EDEAF1;
 `;
 const Text = styled.span`
   font-size: 25px;
@@ -80,6 +85,12 @@ export default function Setting() {
                   <CgProfile />
                 </ProfileIcon>
                 <Text>{loginInfo.name} ({loginInfo.teamName})</Text>
+              </ListItem>
+              <ListItem to="/my-mission">
+                <MissionIcon>
+                  <BsFillBookmarkCheckFill />
+                </MissionIcon>
+                <Text>내 미션 현황</Text>
               </ListItem>
               <ListItem to="/login" onClick={logoutHandler}>
                 <LoginIcon>

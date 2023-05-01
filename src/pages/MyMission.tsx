@@ -10,29 +10,6 @@ import { TbHeartPlus } from "react-icons/tb";
 import axios from "axios";
 import { useRecoilValue } from "recoil";
 import { LoginStateAtom } from "../state/LoginState";
-import Pagination from "../components/Pagination";
-import { useLocation, useNavigate } from "react-router-dom";
-import { Link } from "react-router-dom";
-
-const context = [
-  {
-    id: 6,
-    title: "강아지 귀엽닿 강아지 귀엽닿 강아지 귀엽닿 강아지 귀엽닿 강아지 귀엽닿 강아지 귀엽닿",
-    teamName: "팀1",
-    missionName: "강아지 사진 찍기",
-    status: "PROGRESS",
-    totalScore: 50,
-    date: "2023-04-03T20:21:48.892632",
-    images: [
-      {
-        url: "https://vitapet.com/media/sz1czkya/benefits-of-getting-a-puppy-900x600.jpg?anchor=center&mode=crop&width=1240&rnd=132503927246630000",
-      },
-      {
-        url: "https://cdn.shopify.com/s/files/1/0535/2738/0144/articles/shutterstock_1290320698.jpg?v=1651099282",
-      },
-    ],
-  },
-];
 
 const Card = styled.div`
   display: flex;
@@ -42,12 +19,17 @@ const Card = styled.div`
   margin: 10px 0;
 `;
 const TopContainer = styled.div`
-  padding: 20px 10px 10px 10px;
+  padding: 20px 15px 10px 10px;
   background-color: #f2f2f2;
   border-radius: 10px 10px 0 0;
   display: flex;
+  justify-content: space-between;
+  align-items: center;
   gap: 3px;
 `;
+const LeftContainer = styled.div`
+  display: flex;
+`
 const ProfileSvg = styled.p`
   svg {
     font-size: 55px;
@@ -86,6 +68,13 @@ const ProgressStatus = styled.span`
 const CompleteStatus = styled.span`
   color: #609ad3;
 `;
+const Delete = styled.button`
+  background-color: #fa5757;
+  color: #fff;
+  padding: 6px;
+  border-radius:5px;
+  font-size: 15px;
+`
 const ImgContainer = styled.div`
   display: flex;
   width: 100%;
@@ -123,9 +112,6 @@ const ContentTeam = styled.span`
   margin-right: 7px;
 `
 const ContentTitle = styled.span``
-const ContentLink = styled(Link)`
-  
-`
 const ContentDate = styled.p`
   margin-top: 2px;
   font-size: 15px;
@@ -141,60 +127,28 @@ interface PostProps {
   totalScore : number;
 }
 
-interface PageProps {
-  pageSize: number;
-  totalElements: number;
-  totalPages: number,
-  pageNumber: number,
-}
-
-export default function Home() {
+export default function MyMission() {
   const loginInfo = useRecoilValue(LoginStateAtom)
-  const [ post, setPost ] = useState<PostProps[]>();
-  const [ page, setPage ] = useState(1);
-  const [ pageInfo, setPageInfo ] = useState<PageProps>({
-    pageSize: 0,
-    totalElements: 0,
-    totalPages: 0,
-    pageNumber: 0,
-  });
-  const limit = 5;
+  const [ post, setPost ] = useState<PostProps[]>();  
   const token = useRecoilValue(LoginStateAtom)
-  const location = useLocation();
-  const navigate = useNavigate();
-  useEffect(()=>{
-    if (!(token.accessToken.length > 0)) {
-      navigate("/login")
-    }
-    const pageNum = location.search.split('?page=')[1]
-    getPost(Number(pageNum))
-  },[location])
-  console.log(loginInfo)
   useEffect(()=> {
-    getPost(1)
-  },[]) 
-
-  const getPost = (pageNum:number) => {
+    console.log(token.accessToken)
     axios({
       method: 'get',
-      url: `http://193.123.241.9:8080/register?page=${pageNum}&size=${limit}`,
+      url: `http://193.123.241.9:8080/register/my-team`,
       headers: {
         Authorization: `Bearer ${token.accessToken}`
       },
     }).then(function (response){
-      setPageInfo((prev:any) =>( {
-        ...prev,
-        pageSize: response.data.pageSize,
-        totalElements: response.data.totalElements,
-        totalPages: response.data.totalPages,
-        pageNumber: response.data.pageNumber
-      })
-      )
-      console.log(response.data.content)
-      setPage(response.data.pageNumber)
       setPost(response.data.content)
     })
+  },[])
+  
+  const deletePost = async (id: number) => {
+    alert(`${id}를 삭제하겠습니까?`)
+    await axios.delete(`http://193.123.241.9:8080/register/${id}`, { headers: { Authorization: `Bearer ${token.accessToken}` } });
   }
+  
   return (
     <>
       <HomeBanner />
@@ -203,6 +157,7 @@ export default function Home() {
           return (
             <Card>
               <TopContainer>
+                <LeftContainer>
                 <ProfileSvg>
                   <HiUserCircle />
                 </ProfileSvg>
@@ -223,6 +178,10 @@ export default function Home() {
                     </MissionStatus>
                   </Mission>
                 </TextContainer>
+                </LeftContainer>
+                <Delete onClick={() => deletePost(item.id)}>
+                  삭제
+                </Delete>
               </TopContainer>
               <ImgContainer>
                 {/* <SimpleImageSlider
@@ -241,7 +200,6 @@ export default function Home() {
                 <Content>
                   <ContentTeam>{item.teamName}</ContentTeam>
                   <ContentTitle>{item.title}</ContentTitle>
-                  <ContentLink to={`/post/${item.id}`}>더보기</ContentLink>
                 </Content>
                 <ContentDate>
                   {`${item.date.slice(0,4)}년 ${item.date.slice(5,7)}월 ${item.date.slice(8,10)}일 ${item.date.slice(11,13)}시 ${item.date.slice(14,16)}분`}
@@ -250,13 +208,6 @@ export default function Home() {
             </Card>
           );
         })}
-        <Pagination
-          total={pageInfo.totalElements}
-          limit={limit}
-          page={pageInfo.totalPages}
-          currentPage={pageInfo.pageNumber}
-          setPage={setPage}
-        />
       </Block>
     </>
   );
