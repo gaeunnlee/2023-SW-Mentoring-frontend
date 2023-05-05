@@ -196,7 +196,6 @@ export default function Home() {
     });
   };
   useEffect(()=>{
-    console.log('hi')
     post?.forEach((item)=>{
       if (item.registerFiles.length > 0) {
         item.registerFiles.forEach((imgId) => {
