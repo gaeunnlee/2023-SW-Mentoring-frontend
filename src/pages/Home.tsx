@@ -148,7 +148,6 @@ export default function Home() {
     const pageNum = location.search.split("?page=")[1];
     getPost(Number(pageNum));
   }, [location]);
-  console.log(loginInfo);
   useEffect(() => {
     getPost(1);
   }, []);
