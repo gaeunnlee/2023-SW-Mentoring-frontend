@@ -349,10 +349,6 @@ export default function Post() {
     e.currentTarget.parentElement?.classList.add(`${inputName}Selected`)
     setInputDefault(false)
   }
-  
-  useEffect(()=>{
-    console.log(selectedMission)
-  },[selectedMission])
   return (
     <>
       <Banner title="글쓰기" prev />
