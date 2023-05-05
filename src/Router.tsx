@@ -27,17 +27,17 @@ export default function Router() {
     <BrowserRouter>
       <Nav />
       <Routes>
-        <Route path="/" element={<Home />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="/mission" element={<Mission />} />
-        <Route path="/mission/:missionId" element={<MissionDetail />} />
-        <Route path="/post" element={<Post />} />
-        <Route path={`/post/:postId`} element={<PostDetail />} />
-        <Route path="/team/" element={<Team />} />
-        <Route path={`/team/:teamId`} element={<TeamDetail />} />
-        <Route path="/setting" element={<Setting />} />
-        <Route path="/my-mission" element={<MyMission />} />
-        <Route path="/lost-pw" element={<LostPw/>} />
+        <Route path="/metoring-frontend/" element={<Home />} />
+        <Route path="/metoring-frontend/login" element={<Login />} />
+        <Route path="/metoring-frontend/mission" element={<Mission />} />
+        <Route path="/metoring-frontend/mission/:missionId" element={<MissionDetail />} />
+        <Route path="/metoring-frontend/post" element={<Post />} />
+        <Route path={`/metoring-frontend/post/:postId`} element={<PostDetail />} />
+        <Route path="/metoring-frontend/team/" element={<Team />} />
+        <Route path={`/metoring-frontend/team/:teamId`} element={<TeamDetail />} />
+        <Route path="/metoring-frontend/setting" element={<Setting />} />
+        <Route path="/metoring-frontend/my-mission" element={<MyMission />} />
+        <Route path="/metoring-frontend/lost-pw" element={<LostPw/>} />
       </Routes>``
     </BrowserRouter>
   );

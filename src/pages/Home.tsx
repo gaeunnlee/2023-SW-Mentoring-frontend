@@ -143,7 +143,7 @@ export default function Home() {
   const navigate = useNavigate();
   useEffect(() => {
     if (!(token.accessToken.length > 0)) {
-      navigate("login");
+      navigate("/metoring-frontend/login");
     }
     const pageNum = location.search.split("?page=")[1];
     getPost(Number(pageNum));
