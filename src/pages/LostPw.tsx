@@ -43,7 +43,7 @@ const Label = styled.label`
   font-family: "TheJamsil";
   font-size: 20px;
 `;
-const StudentId = styled.input.attrs({ type: "text" })`
+const CurrentPwInput = styled.input.attrs({ type: "password" })`
   font-family: "TheJamsil";
 `;
 const Password = styled.input.attrs({ type: "password" })`
@@ -64,25 +64,23 @@ const ErrorMsg = styled.p`
 `;
 const schema = yup
   .object({
-    studentId: yup
-      .string()
-      .required("*학번을 입력해주세요")
-      .test(
-        "len",
-        "*8자리 숫자를 입력해주세요",
-        (val) => val?.toString().length >= 8
-      )
-      .matches(/^[0-9]+(?:\.[a-zA-Z0-9-]+)*$/, "*8자리 숫자를 입력해주세요"),
+    currentPw: yup.string().required("*비밀번호를 입력해주세요"),
     password: yup.string().required("*비밀번호를 입력해주세요"),
+    passwordCheck: yup
+    .string()
+    .required("*비밀번호를 입력해주세요")
+    .oneOf([yup.ref('password')], '*일치하지 않습니다')
   })
   .required();
 type FormProps = {
-  studentId: string;
+  currentPw: string;
   password: string;
+  passwordCheck: string;
 };
-export default function Login() {
-  const [ studentId, setStudentId ] = useState("");
+export default function LostPw() {
+  const [ currentPw, setCurrentPw ] = useState("");
   const [ password, setPassword ] = useState("");
+  const [ passwordCheck, setPasswordCheck ] = useState("");
   const [ loginState, setLoginState ] = useRecoilState(LoginStateAtom)
   const navigate = useNavigate();
   const {
@@ -116,45 +114,42 @@ export default function Login() {
   };
   useEffect(()=>{
     console.log(loginState)
-  },[])
-  useEffect(()=>{
-    console.log(loginState)
   },[loginState])
   const onInputHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
     const inputName = e.target.name;
-    if (inputName === ("studentId" || "password")) {
+    if (inputName === ("currentPw" || "password" || "passwordCheck")) {
       trigger(inputName);
-      if ("studentId") {
-        setStudentId(inputName);
+      if ("currentPw") {
+        setCurrentPw(inputName);
       } else if ("password") {
         setPassword(inputName);
+      } else if ("passwordCheck") {
+        setPasswordCheck(inputName);
       }
     }
   };
 
   return (
     <>
-      <Banner title="로그인" prev />
+      <Banner title="비밀번호 변경" prev />
       <Block>
         <Container>
           <Form onSubmit={handleSubmit(onSubmit)}>
             <InputContainer>
-              <Label>학번</Label>
-              <StudentId
-                placeholder="32XXXXXX"
-                {...register("studentId")}
-                name="studentId"
-                type="text"
+              <Label>현재 비밀번호</Label>
+              <CurrentPwInput
+                {...register("currentPw")}
+                name="currentPw"
+                type="password"
                 onInput={onInputHandler}
-                autoComplete="off"
-                maxLength={8}
+                placeholder="********"
               />
               <ErrorMsg>
-                {errors.studentId ? errors.studentId.message : ""}
+                {errors.currentPw ? errors.currentPw.message : ""}
               </ErrorMsg>
             </InputContainer>
             <InputContainer>
-              <Label>비밀번호</Label>
+              <Label>새로운 비밀번호</Label>
               <Password
                 {...register("password")}
                 name="password"
@@ -166,7 +161,20 @@ export default function Login() {
                 {errors.password ? errors.password.message : ""}
               </ErrorMsg>
             </InputContainer>
-            <LoginBtn value="로그인" />
+            <InputContainer>
+              <Label>새로운 비밀번호 확인</Label>
+              <Password
+                {...register("passwordCheck")}
+                name="passwordCheck"
+                type="password"
+                onInput={onInputHandler}
+                placeholder="********"
+              />
+              <ErrorMsg>
+                {errors.passwordCheck ? errors.passwordCheck.message : ""}
+              </ErrorMsg>
+            </InputContainer>
+            <LoginBtn value="변경하기" />
           </Form>
         </Container>
       </Block>

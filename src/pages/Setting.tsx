@@ -2,6 +2,7 @@ import styled from "styled-components";
 import Block from "../components/Block";
 import Banner from "../components/Banner/Banner";
 import { FiLogIn } from "react-icons/fi";
+import { HiOutlineKey } from "react-icons/hi";
 import { CgProfile } from "react-icons/cg";
 import { BsFillBookmarkCheckFill } from "react-icons/bs";
 import { Link } from "react-router-dom";
@@ -44,6 +45,10 @@ const ProfileIcon = styled(Icon)`
 const MissionIcon = styled(Icon)`
   color: #6240AE;
   background-color: #EDEAF1;
+`;
+const PwIcon = styled(Icon)`
+  color: #F4C855;
+  background-color: #FDF6E5;
 `;
 const Text = styled.span`
   font-size: 25px;
@@ -91,6 +96,12 @@ export default function Setting() {
                   <BsFillBookmarkCheckFill />
                 </MissionIcon>
                 <Text>내 미션 현황</Text>
+              </ListItem>
+              <ListItem to="/lost-pw">
+                <PwIcon>
+                  <HiOutlineKey />
+                </PwIcon>
+                <Text>비밀번호 변경</Text>
               </ListItem>
               <ListItem to="/login" onClick={logoutHandler}>
                 <LoginIcon>

@@ -10,6 +10,7 @@ import { TbHeartPlus } from "react-icons/tb";
 import axios from "axios";
 import { useRecoilValue } from "recoil";
 import { LoginStateAtom } from "../state/LoginState";
+import { useNavigate } from "react-router-dom";
 
 const Card = styled.div`
   display: flex;
@@ -131,6 +132,7 @@ export default function MyMission() {
   const loginInfo = useRecoilValue(LoginStateAtom)
   const [ post, setPost ] = useState<PostProps[]>();  
   const token = useRecoilValue(LoginStateAtom)
+  const navigate = useNavigate()
   useEffect(()=> {
     console.log(token.accessToken)
     axios({
@@ -146,7 +148,19 @@ export default function MyMission() {
   
   const deletePost = async (id: number) => {
     alert(`${id}를 삭제하겠습니까?`)
-    await axios.delete(`http://193.123.241.9:8080/register/${id}`, { headers: { Authorization: `Bearer ${token.accessToken}` } });
+    try {
+      await axios.delete(`http://193.123.241.9:8080/register/${id}`, {
+        headers: {
+          Authorization: `Bearer ${token.accessToken}`
+        },
+        withCredentials: true
+      }).then((response) => {
+        alert("삭제되었습니다")
+        navigate("/")
+      });
+    } catch (e) {
+      console.log(e);
+    }
   }
   
   return (

@@ -250,6 +250,7 @@ export default function Post() {
   });
   const [inputDefault, setInputDefault] = useState(false)
   const [filesArray, setFilesArray] = useState([''])
+  const [form, setForm] = useState<FormData>()
   const navigate = useNavigate();
   const getMission = (event: React.MouseEvent<HTMLInputElement, MouseEvent>) => {
     const selected = event.currentTarget.value
@@ -286,9 +287,8 @@ export default function Post() {
   // });
   const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    console.log(formData.get("title"));
-    console.log(formData.get("body"));
-    console.log(formData.getAll("files"));
+    formData.append("title", inputState.title)
+    formData.append("body", inputState.body)
     if (inputState.title.length === 0) {
       alert("제목을 입력해주세요");
     } else if (inputState.body.length === 0) {
@@ -305,7 +305,7 @@ export default function Post() {
           "Content-Type": "multipart/form-data",
           Authorization: `Bearer ${token.accessToken}`,
         },
-        data: formData,
+        data: form,
       }).then((response) => {
         alert("글이 등록되었습니다")
         navigate("/")
@@ -328,18 +328,16 @@ export default function Post() {
   const handleFile = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFilesArray([])
     const files = Array.from(e.target.files || []);
-    console.log(files[0].name)
+    console.log(files)
     files.forEach((f, index) => {
-      formData.append("files", f);
       setFilesArray( prev => [...prev, f.name])
+      formData.append("files",f)
     });
+    formData.append("title",inputState.title)
+    formData.append("body", inputState.body)
+    setForm(formData)
     
   };
-  useEffect(() => {
-    formData.append("title", inputState.title);
-    formData.append("body", inputState.body);
-    console.log(typeof inputState.files);
-  }, [onInputHandler]);
 
   const handleSelected = (e:React.MouseEvent<HTMLInputElement, MouseEvent>) => {
     const inputName = e.currentTarget.name

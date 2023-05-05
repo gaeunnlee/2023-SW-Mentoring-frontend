@@ -18,6 +18,7 @@ import MyMission from "./pages/MyMission";
 import PostDetail from "./pages/PostDetail";
 import { useRecoilValue } from "recoil";
 import { LoginStateAtom } from "./state/LoginState";
+import LostPw from "./pages/LostPw";
 
 export default function Router() {
   const token = useRecoilValue(LoginStateAtom)
@@ -36,7 +37,8 @@ export default function Router() {
         <Route path={`/team/:teamId`} element={<TeamDetail />} />
         <Route path="/setting" element={<Setting />} />
         <Route path="/my-mission" element={<MyMission />} />
-      </Routes>
+        <Route path="/lost-pw" element={<LostPw/>} />
+      </Routes>``
     </BrowserRouter>
   );
 }

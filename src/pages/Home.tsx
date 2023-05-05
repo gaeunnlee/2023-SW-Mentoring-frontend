@@ -17,7 +17,8 @@ import { Link } from "react-router-dom";
 const context = [
   {
     id: 6,
-    title: "강아지 귀엽닿 강아지 귀엽닿 강아지 귀엽닿 강아지 귀엽닿 강아지 귀엽닿 강아지 귀엽닿",
+    title:
+      "강아지 귀엽닿 강아지 귀엽닿 강아지 귀엽닿 강아지 귀엽닿 강아지 귀엽닿 강아지 귀엽닿",
     teamName: "팀1",
     missionName: "강아지 사진 찍기",
     status: "PROGRESS",
@@ -111,90 +112,112 @@ const ScoreContainer = styled.div`
   svg {
     font-size: 28px;
   }
-  `;
+`;
 const Score = styled.span`
   font-size: 18px;
 `;
 const Content = styled.div`
-  line-height: 25px;;
-`
+  line-height: 25px;
+`;
 const ContentTeam = styled.span`
   font-weight: bold;
   margin-right: 7px;
-`
-const ContentTitle = styled.span``
-const ContentLink = styled(Link)`
-  
-`
+`;
+const ContentTitle = styled.span``;
+const ContentLink = styled(Link)``;
 const ContentDate = styled.p`
   margin-top: 2px;
   font-size: 15px;
   color: #8a8a8a;
-`
+`;
 interface PostProps {
-  date : string;
-  id : number;
-  missionName : string;
-  status : string;
-  teamName : string;
-  title : string;
-  totalScore : number;
+  date: string;
+  id: number;
+  missionName: string;
+  status: string;
+  teamName: string;
+  title: string;
+  totalScore: number;
+  registerFiles: [];
 }
 
 interface PageProps {
   pageSize: number;
   totalElements: number;
-  totalPages: number,
-  pageNumber: number,
+  totalPages: number;
+  pageNumber: number;
 }
 
 export default function Home() {
-  const loginInfo = useRecoilValue(LoginStateAtom)
-  const [ post, setPost ] = useState<PostProps[]>();
-  const [ page, setPage ] = useState(1);
-  const [ pageInfo, setPageInfo ] = useState<PageProps>({
+  const loginInfo = useRecoilValue(LoginStateAtom);
+  const [post, setPost] = useState<PostProps[]>([]);
+  const [page, setPage] = useState(1);
+  const [pageInfo, setPageInfo] = useState<PageProps>({
     pageSize: 0,
     totalElements: 0,
     totalPages: 0,
     pageNumber: 0,
   });
   const limit = 5;
-  const token = useRecoilValue(LoginStateAtom)
+  const token = useRecoilValue(LoginStateAtom);
   const location = useLocation();
   const navigate = useNavigate();
-  useEffect(()=>{
+  useEffect(() => {
     if (!(token.accessToken.length > 0)) {
-      navigate("/login")
+      navigate("/login");
     }
-    const pageNum = location.search.split('?page=')[1]
-    getPost(Number(pageNum))
-  },[location])
-  console.log(loginInfo)
-  useEffect(()=> {
-    getPost(1)
-  },[]) 
+    const pageNum = location.search.split("?page=")[1];
+    getPost(Number(pageNum));
+  }, [location]);
+  console.log(loginInfo);
+  useEffect(() => {
+    getPost(1);
+  }, []);
 
-  const getPost = (pageNum:number) => {
+  const getPost = (pageNum: number) => {
     axios({
-      method: 'get',
+      method: "get",
       url: `http://193.123.241.9:8080/register?page=${pageNum}&size=${limit}`,
       headers: {
-        Authorization: `Bearer ${token.accessToken}`
+        Authorization: `Bearer ${token.accessToken}`,
       },
-    }).then(function (response){
-      setPageInfo((prev:any) =>( {
+    }).then(function (response) {
+      setPageInfo((prev: any) => ({
         ...prev,
         pageSize: response.data.pageSize,
         totalElements: response.data.totalElements,
         totalPages: response.data.totalPages,
-        pageNumber: response.data.pageNumber
-      })
-      )
-      console.log(response.data.content)
-      setPage(response.data.pageNumber)
-      setPost(response.data.content)
+        pageNumber: response.data.pageNumber,
+      }));
+      console.log(response.data.content);
+      setPage(response.data.pageNumber);
+      setPost(response.data.content);
+
+    });
+  };
+  useEffect(()=>{
+    console.log('hi')
+    post?.forEach((item)=>{
+      if (item.registerFiles.length > 0) {
+        item.registerFiles.forEach((imgId) => {
+          getImages(imgId)
+        })
+        setPost((prev: any) => ({ ...prev, "registerFiles": item.registerFiles}))
+      }
     })
-  }
+  },[location])
+  const getImages = (imgId: number) => {
+    axios({
+      method: "get",
+      url: `http://193.123.241.9:8080/register/image/${imgId}`,
+      headers: {
+        "Content-Type": "image/jpeg",
+        Authorization: `Bearer ${token.accessToken}`,
+      },
+    }).then(function (response) {
+      console.log(response);
+    });
+  };
   return (
     <>
       <HomeBanner />
@@ -225,6 +248,7 @@ export default function Home() {
                 </TextContainer>
               </TopContainer>
               <ImgContainer>
+                
                 {/* <SimpleImageSlider
                   width={300}
                   height={300}
@@ -244,7 +268,13 @@ export default function Home() {
                   <ContentLink to={`/post/${item.id}`}>더보기</ContentLink>
                 </Content>
                 <ContentDate>
-                  {`${item.date.slice(0,4)}년 ${item.date.slice(5,7)}월 ${item.date.slice(8,10)}일 ${item.date.slice(11,13)}시 ${item.date.slice(14,16)}분`}
+                  {`${item.date.slice(0, 4)}년 ${item.date.slice(
+                    5,
+                    7
+                  )}월 ${item.date.slice(8, 10)}일 ${item.date.slice(
+                    11,
+                    13
+                  )}시 ${item.date.slice(14, 16)}분`}
                 </ContentDate>
               </ContentContainer>
             </Card>
