@@ -116,7 +116,6 @@ export default function Pagination({ total, limit, page, currentPage, setPage }:
               onClick={() => {
                 setPage(i + 1)
                 navigate(`?page=${i + 1}`)
-                console.log(currentPage)
               }}
               className={currentPage === i + 1 ? "current" : undefined}
             >
