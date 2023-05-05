@@ -1,0 +1,13 @@
+{
+  "files": {
+    "main.js": "/mentoring-frontend/static/js/main.f2568b04.js",
+    "static/media/JejuGothic.ttf": "/mentoring-frontend/static/media/JejuGothic.5ab8dde3b67410fcb5f4.ttf",
+    "static/media/Jalnan.ttf": "/mentoring-frontend/static/media/Jalnan.4b55e11e029184231b61.ttf",
+    "static/media/TheJamsil.ttf": "/mentoring-frontend/static/media/TheJamsil.65c3e10f005c849f4509.ttf",
+    "index.html": "/mentoring-frontend/index.html",
+    "main.f2568b04.js.map": "/mentoring-frontend/static/js/main.f2568b04.js.map"
+  },
+  "entrypoints": [
+    "static/js/main.f2568b04.js"
+  ]
+}
