@@ -264,7 +264,7 @@ export default function Post() {
   const formData = new FormData();
   useEffect(() => {
     if (!(token.accessToken.length > 0)) {
-      navigate("/login")
+      navigate("login")
     }
     axios({
       method: "get",

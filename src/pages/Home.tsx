@@ -14,27 +14,6 @@ import Pagination from "../components/Pagination";
 import { useLocation, useNavigate } from "react-router-dom";
 import { Link } from "react-router-dom";
 
-const context = [
-  {
-    id: 6,
-    title:
-      "강아지 귀엽닿 강아지 귀엽닿 강아지 귀엽닿 강아지 귀엽닿 강아지 귀엽닿 강아지 귀엽닿",
-    teamName: "팀1",
-    missionName: "강아지 사진 찍기",
-    status: "PROGRESS",
-    totalScore: 50,
-    date: "2023-04-03T20:21:48.892632",
-    images: [
-      {
-        url: "https://vitapet.com/media/sz1czkya/benefits-of-getting-a-puppy-900x600.jpg?anchor=center&mode=crop&width=1240&rnd=132503927246630000",
-      },
-      {
-        url: "https://cdn.shopify.com/s/files/1/0535/2738/0144/articles/shutterstock_1290320698.jpg?v=1651099282",
-      },
-    ],
-  },
-];
-
 const Card = styled.div`
   display: flex;
   flex-direction: column;
@@ -164,7 +143,7 @@ export default function Home() {
   const navigate = useNavigate();
   useEffect(() => {
     if (!(token.accessToken.length > 0)) {
-      navigate("/login");
+      navigate("login");
     }
     const pageNum = location.search.split("?page=")[1];
     getPost(Number(pageNum));
