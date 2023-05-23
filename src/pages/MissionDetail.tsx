@@ -119,7 +119,7 @@ export default function MissionDetail() {
   useEffect(() => {
     axios({
       method: "get",
-      url: `http://193.123.241.9:8080/missions/${missionId}`,
+      url: `/missions/${missionId}`,
     }).then(function (response) {
       setMission(response.data);
     });

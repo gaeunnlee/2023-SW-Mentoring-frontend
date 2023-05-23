@@ -108,7 +108,7 @@ export default function Mission() {
   useEffect(()=> {
     axios({
       method: 'get',
-      url: 'http://193.123.241.9:8080/missions?page=1&size=10'
+      url: '/missions?page=1&size=50'
     }).then(function (response){
       setMissionList(response.data.content)
     })

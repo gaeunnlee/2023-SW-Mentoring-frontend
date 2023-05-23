@@ -83,9 +83,12 @@ const NameContainer = styled.div`
 const TeamName = styled.p`
   font-weight: bold;
   font-size: 20px;
+  width: 150px;
+  text-align: center;
 `;
 const TeamMentor = styled.p`
   color: #71717a;
+  text-align: center;
 `;
 const TeamScore = styled.div`
   font-size: 30px;
@@ -110,7 +113,7 @@ export default function Team() {
   useEffect(()=> {
     axios({
       method: 'get',
-      url: 'http://193.123.241.9:8080/team?page=1&size=10'
+      url: '/team?page=1&size=10'
     }).then(function (response){
       setTeam(response.data.content)
       console.log(response.data.content)
@@ -124,11 +127,11 @@ export default function Team() {
           {team?.map(({ id, teamName, userName_mentor, score }, index) => {
             return (
               <TeamItem to={`/team/${id}`}>
-                <Rank>
+                {/* <Rank>
                     {index !== 0 && (
                         team[index - 1].score === score
                     )? index : index + 1 }
-                </Rank>
+                </Rank> */}
                 <NameContainer>
                   <TeamName>{teamName}</TeamName>
                   <TeamMentor>{userName_mentor}</TeamMentor>

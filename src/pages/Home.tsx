@@ -169,7 +169,6 @@ export default function Home() {
     const pageNum = location.search.split("?page=")[1];
     getPost(Number(pageNum));
   }, [location]);
-  console.log(loginInfo);
   useEffect(() => {
     getPost(1);
   }, []);
@@ -177,7 +176,7 @@ export default function Home() {
   const getPost = (pageNum: number) => {
     axios({
       method: "get",
-      url: `http://193.123.241.9:8080/register?page=${pageNum}&size=${limit}`,
+      url: `/register?page=${pageNum}&size=${limit}`,
       headers: {
         Authorization: `Bearer ${token.accessToken}`,
       },
@@ -189,35 +188,11 @@ export default function Home() {
         totalPages: response.data.totalPages,
         pageNumber: response.data.pageNumber,
       }));
-      console.log(response.data.content);
       setPage(response.data.pageNumber);
       setPost(response.data.content);
+    });
+  };
 
-    });
-  };
-  useEffect(()=>{
-    console.log('hi')
-    post?.forEach((item)=>{
-      if (item.registerFiles.length > 0) {
-        item.registerFiles.forEach((imgId) => {
-          getImages(imgId)
-        })
-        setPost((prev: any) => ({ ...prev, "registerFiles": item.registerFiles}))
-      }
-    })
-  },[location])
-  const getImages = (imgId: number) => {
-    axios({
-      method: "get",
-      url: `http://193.123.241.9:8080/register/image/${imgId}`,
-      headers: {
-        "Content-Type": "image/jpeg",
-        Authorization: `Bearer ${token.accessToken}`,
-      },
-    }).then(function (response) {
-      console.log(response);
-    });
-  };
   return (
     <>
       <HomeBanner />
@@ -248,14 +223,22 @@ export default function Home() {
                 </TextContainer>
               </TopContainer>
               <ImgContainer>
-                
-                {/* <SimpleImageSlider
+                        
+                <SimpleImageSlider
                   width={300}
                   height={300}
-                  images={context[0].images}
+                  images={ 
+                    (function(){
+                      let imgUrl : string[] = []
+                      item.registerFiles.forEach((imgId)=>{
+                        imgUrl.push(`http://193.123.241.9/register/image/${imgId}`)
+                      })
+                      return(imgUrl)
+                    })()
+                  }
                   showBullets={true}
                   showNavs={true}
-                /> */}
+                />
               </ImgContainer>
               <ContentContainer>
                 <ScoreContainer>

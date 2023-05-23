@@ -82,7 +82,7 @@ export default function Pagination({ total, limit, page, currentPage, setPage }:
   const getPost = (pageNum: number) => {
     axios({
       method: "get",
-      url: `http://193.123.241.9:8080/register?page=${pageNum}&size=${limit}`,
+      url: `/register?page=${pageNum}&size=${limit}`,
       headers: {
         Authorization: `Bearer ${token.accessToken}`,
       },

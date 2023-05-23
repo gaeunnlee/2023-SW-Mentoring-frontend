@@ -99,7 +99,7 @@ export default function TeamDetail() {
   useEffect(()=> {
     axios({
       method: 'get',
-      url: `http://193.123.241.9:8080/team/${teamId}`
+      url: `/team/${teamId}`
     }).then(function (response){
       setTeam(response.data)
     })

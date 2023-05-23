@@ -135,7 +135,7 @@ export default function PostDetail() {
   const getPost = (postId: number) => {
     axios({
       method: "get",
-      url: `http://193.123.241.9:8080/register/${postId}/view`,
+      url: `/register/${postId}/view`,
       headers: {
         Authorization: `Bearer ${token.accessToken}`,
       },

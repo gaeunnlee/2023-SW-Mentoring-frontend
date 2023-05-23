@@ -98,7 +98,7 @@ export default function Login() {
     try {
       const { data } = await axios({
         method: "post",
-        url: "http://193.123.241.9:8080/user/login",
+        url: "/user/login",
         headers: {
           "Content-Type": "application/json",
         },

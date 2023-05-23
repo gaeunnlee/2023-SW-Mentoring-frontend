@@ -11,6 +11,7 @@ import axios from "axios";
 import { useRecoilValue } from "recoil";
 import { LoginStateAtom } from "../state/LoginState";
 import { useNavigate } from "react-router-dom";
+import { get } from "http";
 
 const Card = styled.div`
   display: flex;
@@ -126,6 +127,7 @@ interface PostProps {
   teamName : string;
   title : string;
   totalScore : number;
+  registerFiles: [];  
 }
 
 export default function MyMission() {
@@ -135,33 +137,29 @@ export default function MyMission() {
   const navigate = useNavigate()
   useEffect(()=> {
     console.log(token.accessToken)
+    getPost()
+  },[])
+  const getPost = () => {
     axios({
       method: 'get',
-      url: `http://193.123.241.9:8080/register/my-team`,
+      url: `/register/my-team`,
       headers: {
         Authorization: `Bearer ${token.accessToken}`
       },
     }).then(function (response){
       setPost(response.data.content)
     })
-  },[])
-  
-  const deletePost = async (id: number) => {
+  }
+  const deletePost =  (id: number) => {
     alert(`${id}를 삭제하겠습니까?`)
-    try {
-      await axios.delete(`http://193.123.241.9:8080/register/${id}`, {
+       axios.delete(`/register/${id}`, {
         headers: {
           Authorization: `Bearer ${token.accessToken}`
-        },
-        withCredentials: true
-      }).then((response) => {
-        alert("삭제되었습니다")
-        navigate("/")
-      });
-    } catch (e) {
-      console.log(e);
+        }
+      }).then((response)=>{
+        alert("삭제 완료되었습니다.")
+      })
     }
-  }
   
   return (
     <>
@@ -198,13 +196,21 @@ export default function MyMission() {
                 </Delete>
               </TopContainer>
               <ImgContainer>
-                {/* <SimpleImageSlider
+                <SimpleImageSlider
                   width={300}
                   height={300}
-                  images={context[0].images}
+                  images={
+                    (function(){
+                      let imgUrl : string[] = []
+                      item.registerFiles.forEach((imgId)=>{
+                        imgUrl.push(`http://193.123.241.9/register/image/${imgId}`)
+                      })
+                      return(imgUrl)
+                    })()
+                  }
                   showBullets={true}
                   showNavs={true}
-                /> */}
+                />
               </ImgContainer>
               <ContentContainer>
                 <ScoreContainer>

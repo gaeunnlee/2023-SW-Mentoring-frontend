@@ -83,11 +83,12 @@ const MissionsContainer = styled.div`
   
 `
 const MissionLabel = styled.label`
-  display: flex;
-  flex-direction: column;
+  display: block;
   cursor: pointer;
+  margin-bottom: 10px;
   &.missionSelected span {
-    display: inline;
+    padding: 3px 5px;
+    border-radius: 3px;
     background-color: #b2dd94; 
   }
 `
@@ -256,7 +257,7 @@ export default function Post() {
     const selected = event.currentTarget.value
     axios({
       method: "get",
-      url: `http://193.123.241.9:8080/missions/difficulty/${selected}`,
+      url: `/missions/difficulty/${selected}`,
     }).then(function (response) {
       setMissions(response.data.content)
     });
@@ -268,7 +269,7 @@ export default function Post() {
     }
     axios({
       method: "get",
-      url: "http://193.123.241.9:8080/missions/difficulty",
+      url: "/missions/difficulty",
     }).then(function (response) {
       getDifficulties(response.data);
     });
@@ -287,8 +288,9 @@ export default function Post() {
   // });
   const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    formData.append("title", inputState.title)
-    formData.append("body", inputState.body)
+    form?.append("title", inputState.title)
+    form?.append("body", inputState.body)
+    console.log(form?.getAll("files"))
     if (inputState.title.length === 0) {
       alert("제목을 입력해주세요");
     } else if (inputState.body.length === 0) {
@@ -300,7 +302,7 @@ export default function Post() {
     try {
       await axios({
         method: "post",
-        url: `http://193.123.241.9:8080/register/${selectedMission.id}/register`,
+        url: `/register/${selectedMission.id}/register`,
         headers: {
           "Content-Type": "multipart/form-data",
           Authorization: `Bearer ${token.accessToken}`,
@@ -336,18 +338,21 @@ export default function Post() {
     formData.append("title",inputState.title)
     formData.append("body", inputState.body)
     setForm(formData)
-    
   };
 
   const handleSelected = (e:React.MouseEvent<HTMLInputElement, MouseEvent>) => {
     const inputName = e.currentTarget.name
-    console.log(e.currentTarget)
     const originSelected = document.querySelectorAll(`.${inputName}Selected`);
     if (originSelected.length >= 1 ) {
         originSelected[0].classList.remove(`${inputName}Selected`)
     }
     e.currentTarget.parentElement?.classList.add(`${inputName}Selected`)
     setInputDefault(false)
+    if ( inputName === "difficulty" ) {
+      if (document.querySelectorAll(".missionSelected").length > 0) {
+        document.querySelectorAll(".missionSelected")[0].classList.remove("missionSelected")
+      }
+    }
   }
   
   useEffect(()=>{
