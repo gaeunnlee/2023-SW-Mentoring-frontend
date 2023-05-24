@@ -123,4 +123,50 @@ a {
 input[type="submit"], input[type="button"] {
     border: 0;
 } 
+
+.pagination {
+  display: flex;
+  justify-content: space-between;
+  list-style: none;
+  margin-bottom: 10px;
+  width: 100%;
+  height: 50px;
+  align-items: center;
+  gap: 2px;
+  position: sticky;
+  top: -20px;
+  padding: 10px 0;
+  background-color: #f9f9f9;
+}
+
+.pagination .break {
+}
+
+.pagination a {
+  padding: 10px;
+  border-radius: 5px;
+  border : 1px solid #ffa46c;
+  color: #ffa46c;
+  &:hover {
+    cursor: pointer;
+    background-color: #ffa46c;
+    color: #fff;
+  }
+}
+
+.pagination__link {
+  font-weight: bold;
+}
+
+.pagination__link--active a {
+  color: #fff;
+  background: #ffa46c;
+}
+
+.pagination__link--disabled a {
+  color: rgb(198, 197, 202);
+  border: 1px solid rgb(198, 197, 202);
+  background-color: transparent;
+}
+
 `;

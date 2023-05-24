@@ -4,55 +4,7 @@ import Block from "../components/Block";
 import { Link } from "react-router-dom";
 import axios from "axios";
 import { useEffect, useState } from "react";
-
-const context = [
-  {
-    id: 1,
-    name: "한강에서 치킨먹기",
-    description: "한강에서 BBQ 뿌링클 시켜 먹기",
-    point: 30,
-    category: "CULTURE",
-    bonusList: [
-      {
-        plusMission: "음식 다 비우기",
-        plusPoint: 10,
-      },
-      {
-        plusMission: "쓰레기 치우기",
-        plusPoint: 10,
-      },
-    ],
-    info: "EASY",
-  },
-  {
-    id: 2,
-    name: "도서관에서 공부하기",
-    description: "도서관에서 공부하기",
-    point: 30,
-    category: "STUDY",
-    bonusList: [
-      {
-        plusMission: "4시간 이상하기",
-        plusPoint: 10,
-      },
-    ],
-    info: "VERY_EASY",
-  },
-  {
-    id: 48,
-    name: "짚라인 타기",
-    description: "짚라인 타기",
-    point: 50,
-    category: "ACTIVITY",
-    bonusList: [
-      {
-        plusMission: "4시간 이상하기",
-        plusPoint: 10,
-      },
-    ],
-    info: "VERY_EASY",
-  },
-];
+import Paging from "../components/Paging";
 
 const Container = styled.ul`
   display: flex;
@@ -74,13 +26,13 @@ const ListLeft = styled.div`
   gap: 1px;
 `;
 const MissionName = styled.p`
-    margin: 3px 0 0 2px;
-    font-size: 20px;
-    color: #000;
+  margin: 3px 0 0 2px;
+  font-size: 20px;
+  color: #000;
 `;
 const MissionCate = styled.div`
-    padding: 10px 0;
-    font-size: 11px;
+  padding: 10px 0;
+  font-size: 11px;
   span {
     background-color: #b2dd94;
     color: #fff;
@@ -90,35 +42,67 @@ const MissionCate = styled.div`
   }
 `;
 const MissionScore = styled.p`
-    font-size: 40px;
-    font-weight: bold;
-    color: #de7474;
+  font-size: 40px;
+  font-weight: bold;
+  color: #de7474;
 `;
 interface MissionListProps {
-  bonusList : [];
-  category : string;
-  description : string;
-  id : number;
-  info : string;
-  name : string;
-  point : number;
+  bonusList: [];
+  category: string;
+  description: string;
+  id: number;
+  info: string;
+  name: string;
+  point: number;
+}
+interface PageProps {
+  pageSize: number;
+  totalElements: number;
+  totalPages: number;
+  pageNumber: number;
 }
 export default function Mission() {
-  const [ missionList, setMissionList ] = useState<MissionListProps[]>()
-  useEffect(()=> {
+  const [missionList, setMissionList] = useState<MissionListProps[]>();
+  const [pageInfo, setPageInfo] = useState<PageProps>({
+    pageSize: 0,
+    totalElements: 0,
+    totalPages: 0,
+    pageNumber: 0,
+  });
+  const [page, setPage] = useState(1);
+  useEffect(() => {
+    getMission(1);
+  }, []);
+
+  const getMission = (pageNum: number) => {
     axios({
-      method: 'get',
-      url: '/missions?page=1&size=50'
-    }).then(function (response){
-      setMissionList(response.data.content)
-    })
-  },[])
+      method: "get",
+      url: `/missions?page=${pageNum}&size=10`,
+    }).then(function (response) {
+      setMissionList(response.data.content);
+      setPageInfo((prev: any) => ({
+        ...prev,
+        pageSize: response.data.pageSize,
+        totalElements: response.data.totalElements,
+        totalPages: response.data.totalPages,
+        pageNumber: response.data.pageNumber,
+      }));
+    });
+  };
+  const handlePageClick = (event: any) => {
+    getMission(event.selected + 1);
+    return undefined;
+  };
 
   return (
     <>
       <Banner title="미션" />
       <Block>
         <Container>
+          <Paging
+            pageCount={pageInfo.totalPages}
+            handlePageClick={handlePageClick}
+          />
           {missionList?.map((item) => {
             return (
               <MissionList to={`/mission/${item.id}`}>

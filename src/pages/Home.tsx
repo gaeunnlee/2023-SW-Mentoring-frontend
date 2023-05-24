@@ -13,6 +13,7 @@ import { LoginStateAtom } from "../state/LoginState";
 import Pagination from "../components/Pagination";
 import { useLocation, useNavigate } from "react-router-dom";
 import { Link } from "react-router-dom";
+import Paging from "../components/Paging";
 
 const context = [
   {
@@ -192,11 +193,19 @@ export default function Home() {
       setPost(response.data.content);
     });
   };
+  const handlePageClick = (event: any) => {
+    getPost(event.selected + 1);
+    return undefined;
+  };
 
   return (
     <>
       <HomeBanner />
       <Block>
+        <Paging
+          pageCount={pageInfo.totalPages}
+          handlePageClick={handlePageClick}
+        />
         {post?.map((item) => {
           return (
             <Card>
@@ -223,19 +232,18 @@ export default function Home() {
                 </TextContainer>
               </TopContainer>
               <ImgContainer>
-                        
                 <SimpleImageSlider
                   width={300}
                   height={300}
-                  images={ 
-                    (function(){
-                      let imgUrl : string[] = []
-                      item.registerFiles.forEach((imgId)=>{
-                        imgUrl.push(`http://193.123.241.9/register/image/${imgId}`)
-                      })
-                      return(imgUrl)
-                    })()
-                  }
+                  images={(function () {
+                    let imgUrl: string[] = [];
+                    item.registerFiles.forEach((imgId) => {
+                      imgUrl.push(
+                        `http://193.123.241.9/register/image/${imgId}`
+                      );
+                    });
+                    return imgUrl;
+                  })()}
                   showBullets={true}
                   showNavs={true}
                 />
@@ -263,13 +271,6 @@ export default function Home() {
             </Card>
           );
         })}
-        <Pagination
-          total={pageInfo.totalElements}
-          limit={limit}
-          page={pageInfo.totalPages}
-          currentPage={pageInfo.pageNumber}
-          setPage={setPage}
-        />
       </Block>
     </>
   );
