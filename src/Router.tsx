@@ -38,7 +38,7 @@ export default function Router() {
         <Route path="/setting" element={<Setting />} />
         <Route path="/my-mission" element={<MyMission />} />
         <Route path="/lost-pw" element={<LostPw/>} />
-      </Routes>``
+      </Routes>
     </BrowserRouter>
   );
 }
