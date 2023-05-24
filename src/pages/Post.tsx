@@ -80,7 +80,8 @@ const DifficultyInput = styled.input.attrs({ type: "radio" })`
   display: none;
 `;
 const MissionsContainer = styled.div`
-  
+  height: 100px;
+  overflow-y: scroll;
 `
 const MissionLabel = styled.label`
   display: block;
@@ -90,6 +91,11 @@ const MissionLabel = styled.label`
     padding: 3px 5px;
     border-radius: 3px;
     background-color: #b2dd94; 
+  }
+  span:hover {
+    padding: 3px 5px;
+    border-radius: 3px;
+    background-color: #e8ffd8; 
   }
 `
 const MissionInput = styled.input.attrs({ type: "radio"})`
@@ -257,7 +263,7 @@ export default function Post() {
     const selected = event.currentTarget.value
     axios({
       method: "get",
-      url: `/missions/difficulty/${selected}`,
+      url: `/missions/difficulty/${selected}?page=1&size=100`,
     }).then(function (response) {
       setMissions(response.data.content)
     });

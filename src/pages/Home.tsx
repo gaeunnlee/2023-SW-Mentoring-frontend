@@ -10,7 +10,6 @@ import { TbHeartPlus } from "react-icons/tb";
 import axios from "axios";
 import { useRecoilValue } from "recoil";
 import { LoginStateAtom } from "../state/LoginState";
-import Pagination from "../components/Pagination";
 import { useLocation, useNavigate } from "react-router-dom";
 import { Link } from "react-router-dom";
 import Paging from "../components/Paging";
