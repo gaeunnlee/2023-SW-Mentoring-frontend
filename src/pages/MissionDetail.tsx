@@ -5,25 +5,6 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import { useLocation } from "react-router-dom";
 
-const context = {
-  id: 1,
-  name: "한강에서 치킨먹기",
-  description: "한강에서 BBQ 뿌링클 시켜 먹기",
-  info: "EASY",
-  bonusList: [
-    {
-      plusMission: "음식 다 비우기",
-      plusPoint: 10,
-    },
-    {
-      plusMission: "쓰레기 치우기",
-      plusPoint: 10,
-    },
-  ],
-  point: 30,
-  category: "CULTURE",
-};
-
 const MissionCard = styled.div`
   background-color: #fff;
   display: flex;
@@ -67,6 +48,7 @@ const BonusList = styled.li`
   display: flex;
   gap: 5px;
   margin-top: 10px;
+  align-items: center;
 `;
 const BonusTitle = styled.span`
   font-size: 20px;
@@ -92,7 +74,10 @@ const BonusName = styled.p`
   color: #222;
 `;
 const BonusPoint = styled.p`
-  color: #609ad3;
+  color: #fff;
+  background-color: #b0d8ff;
+  padding: 10px;
+  border-radius: 100%;
   font-weight: bold;
 `;
 
@@ -106,7 +91,7 @@ interface MissionProps {
   name: string;
   description: string;
   info: string;
-  bonusList: [];
+  bonusList: BonusProps[];
   point: number;
   category: string;
 }
@@ -122,6 +107,7 @@ export default function MissionDetail() {
       url: `/missions/${missionId}`,
     }).then(function (response) {
       setMission(response.data);
+      console.log(response.data)
     });
   }, []);
   return (
@@ -143,14 +129,16 @@ export default function MissionDetail() {
           <BonusTitle>
             <span>보너스 미션</span>
           </BonusTitle>
-          {mission?.bonusList?.length !== 0 ? (
+          {mission?.bonusList?.length !== undefined   ? (
             <>
+              
               {mission?.bonusList.map((item: BonusProps) => {
+                 return(
                   <BonusList>
-                    <CheckBox />
-                    <BonusName>{item.plusMission}</BonusName>
-                    <BonusPoint>+{item.plusPoint}점</BonusPoint>
-                  </BonusList>
+                  <BonusPoint>{item.plusPoint}</BonusPoint>
+                  <BonusName>{item.plusMission}</BonusName>
+                </BonusList>
+                 )
               })}
             </>
           ) : (

@@ -14,27 +14,6 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { Link } from "react-router-dom";
 import Paging from "../components/Paging";
 
-const context = [
-  {
-    id: 6,
-    title:
-      "강아지 귀엽닿 강아지 귀엽닿 강아지 귀엽닿 강아지 귀엽닿 강아지 귀엽닿 강아지 귀엽닿",
-    teamName: "팀1",
-    missionName: "강아지 사진 찍기",
-    status: "PROGRESS",
-    totalScore: 50,
-    date: "2023-04-03T20:21:48.892632",
-    images: [
-      {
-        url: "https://vitapet.com/media/sz1czkya/benefits-of-getting-a-puppy-900x600.jpg?anchor=center&mode=crop&width=1240&rnd=132503927246630000",
-      },
-      {
-        url: "https://cdn.shopify.com/s/files/1/0535/2738/0144/articles/shutterstock_1290320698.jpg?v=1651099282",
-      },
-    ],
-  },
-];
-
 const Card = styled.div`
   display: flex;
   flex-direction: column;
@@ -161,6 +140,7 @@ export default function Home() {
   const limit = 5;
   const token = useRecoilValue(LoginStateAtom);
   const location = useLocation();
+  
   const navigate = useNavigate();
   useEffect(() => {
     if (!(token.accessToken.length > 0)) {
@@ -238,7 +218,7 @@ export default function Home() {
                     let imgUrl: string[] = [];
                     item.registerFiles.forEach((imgId) => {
                       imgUrl.push(
-                        `http://193.123.241.9/register/image/${imgId}`
+                        `http://dku-mentor.site/register/image/${imgId}`
                       );
                     });
                     return imgUrl;
@@ -255,7 +235,7 @@ export default function Home() {
                 <Content>
                   <ContentTeam>{item.teamName}</ContentTeam>
                   <ContentTitle>{item.title}</ContentTitle>
-                  <ContentLink to={`/post/${item.id}`}>더보기</ContentLink>
+                  <ContentLink to={`/post/${item.id}`} state={{imgIds: item.registerFiles}}>더보기</ContentLink>
                 </Content>
                 <ContentDate>
                   {`${item.date.slice(0, 4)}년 ${item.date.slice(

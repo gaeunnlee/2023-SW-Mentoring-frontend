@@ -4,52 +4,6 @@ import Banner from "../components/Banner/Banner";
 import { Link } from "react-router-dom";
 import { useEffect, useState } from "react";
 import axios from "axios";
-
-const context = [
-    {
-        "id": 33,
-        "teamName": "팀5",
-        "userName_mentor": "조성현",
-        "score": 80
-    },
-    {
-        "id": 30,
-        "teamName": "팀4",
-        "userName_mentor": "홍길동",
-        "score": 60
-    },
-    {
-        "id": 4,
-        "teamName": "팀1",
-        "userName_mentor": "차현민",
-        "score": 40
-    },
-    {
-        "id": 24,
-        "teamName": "팀2",
-        "userName_mentor": "김한이",
-        "score": 40
-    },
-    {
-        "id": 36,
-        "teamName": "팀7",
-        "userName_mentor": "안재헌",
-        "score": 40
-    },
-    {
-        "id": 27,
-        "teamName": "팀3",
-        "userName_mentor": "이수경",
-        "score": 20
-    },
-    {
-        "id": 39,
-        "teamName": "팀8",
-        "userName_mentor": "이가은",
-        "score": 20
-    }
-]
-
 interface TeamProps {
   "id": number,
   "teamName": string,
@@ -113,7 +67,7 @@ export default function Team() {
   useEffect(()=> {
     axios({
       method: 'get',
-      url: '/team?page=1&size=10'
+      url: '/team?page=1&size=200'
     }).then(function (response){
       setTeam(response.data.content)
       console.log(response.data.content)

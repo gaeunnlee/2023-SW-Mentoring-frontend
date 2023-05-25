@@ -128,17 +128,19 @@ input[type="submit"], input[type="button"] {
   display: flex;
   justify-content: space-between;
   list-style: none;
-  margin-bottom: 10px;
   width: 100%;
   height: 50px;
   align-items: center;
   gap: 2px;
   position: sticky;
   top: -20px;
-  padding: 10px 0;
   background-color: #f9f9f9;
+  z-index: 999;
 }
 
+.hidden {
+  display: none;
+}
 .pagination .break {
 }
 
@@ -149,8 +151,6 @@ input[type="submit"], input[type="button"] {
   color: #ffa46c;
   &:hover {
     cursor: pointer;
-    background-color: #ffa46c;
-    color: #fff;
   }
 }
 

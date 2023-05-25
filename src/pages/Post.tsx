@@ -294,9 +294,7 @@ export default function Post() {
   // });
   const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    form?.append("title", inputState.title)
-    form?.append("body", inputState.body)
-    console.log(form?.getAll("files"))
+    
     if (inputState.title.length === 0) {
       alert("제목을 입력해주세요");
     } else if (inputState.body.length === 0) {
@@ -322,6 +320,7 @@ export default function Post() {
       console.log(e);
     }
   };
+
   const onInputHandler = (
     e:
       | React.ChangeEvent<HTMLInputElement>
@@ -342,7 +341,7 @@ export default function Post() {
       formData.append("files",f)
     });
     formData.append("title",inputState.title)
-    formData.append("body", inputState.body)
+    formData.append("body",inputState.body)
     setForm(formData)
   };
 
@@ -361,9 +360,6 @@ export default function Post() {
     }
   }
   
-  useEffect(()=>{
-    console.log(selectedMission)
-  },[selectedMission])
   return (
     <>
       <Banner title="글쓰기" prev />

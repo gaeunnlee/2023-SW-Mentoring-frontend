@@ -46,6 +46,30 @@ const MissionScore = styled.p`
   font-weight: bold;
   color: #de7474;
 `;
+const FilterContainer = styled.div``;
+const DifficultyContainer = styled.div`
+  display: flex;
+  gap: 0.8vw;
+`;
+const DifficultyLabel = styled.label`
+  cursor: pointer;
+  border: solid 2px #b2dd94;
+  background-color: #fff;
+  padding: 8px;
+  border-radius: 5px;
+  &.difficultySelected {
+    background-color: #b2dd94;
+  }
+`;
+const DifficultyInput = styled.input.attrs({ type: "radio" })`
+  display: none;
+`;
+const MissionsContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+`;
+
 interface MissionListProps {
   bonusList: [];
   category: string;
@@ -61,19 +85,52 @@ interface PageProps {
   totalPages: number;
   pageNumber: number;
 }
+interface DifficultiesProps {
+  id: string;
+  name: string;
+}
+interface selectedMissionProps {
+  id: number;
+  name: string;
+}
 export default function Mission() {
   const [missionList, setMissionList] = useState<MissionListProps[]>();
+  const [difficulties, getDifficulties] = useState<DifficultiesProps[]>();
+  const [missions, setMissions] = useState<MissionListProps[]>();
+  const [showPage, setShowPage] = useState(true)
+  const [originPage, setOriginPage] = useState(1)
   const [pageInfo, setPageInfo] = useState<PageProps>({
     pageSize: 0,
     totalElements: 0,
     totalPages: 0,
     pageNumber: 0,
   });
+  const [selectedMission, setSelectedMission] = useState<selectedMissionProps>({
+    id: 0,
+    name: "",
+  });
   const [page, setPage] = useState(1);
+  const [inputDefault, setInputDefault] = useState(false);
   useEffect(() => {
     getMission(1);
+    axios({
+      method: "get",
+      url: "/missions/difficulty",
+    }).then(function (response) {
+      getDifficulties(response.data);
+    });
   }, []);
-
+  const getMissionLevel = (
+    event: React.MouseEvent<HTMLInputElement, MouseEvent>
+  ) => {
+    const selected = event.currentTarget.value;
+    axios({
+      method: "get",
+      url: `/missions/difficulty/${selected}?page=1&size=100`,
+    }).then(function (response) {
+      setMissions(response.data.content);
+    });
+  };
   const getMission = (pageNum: number) => {
     axios({
       method: "get",
@@ -91,7 +148,34 @@ export default function Mission() {
   };
   const handlePageClick = (event: any) => {
     getMission(event.selected + 1);
+    setOriginPage(event.selected + 1)
     return undefined;
+  };
+
+  const handleSelected = (
+    e: React.MouseEvent<HTMLInputElement, MouseEvent>
+  ) => {
+    const input = e.currentTarget
+    const inputName = e.currentTarget.name;
+    const originSelected = document.querySelectorAll(`.${inputName}Selected`);
+    setMissionList([]);
+    if (originSelected.length >= 1) {
+      originSelected[0].classList.remove(`${inputName}Selected`);
+    }
+    e.currentTarget.parentElement?.classList.add(`${inputName}Selected`);
+    setInputDefault(false);
+    if (inputName === "difficulty") {
+      if (input.className.indexOf("all") < 0 ) {
+        setShowPage(false)
+      } else {
+        setShowPage(true)
+      }
+      if (document.querySelectorAll(".missionSelected").length > 0) {
+        document
+          .querySelectorAll(".missionSelected")[0]
+          .classList.remove("missionSelected");
+      }
+    }
   };
 
   return (
@@ -100,9 +184,57 @@ export default function Mission() {
       <Block>
         <Container>
           <Paging
+            show={showPage}
             pageCount={pageInfo.totalPages}
             handlePageClick={handlePageClick}
           />
+          <FilterContainer>
+            <MissionsContainer>
+              <DifficultyContainer>
+                <DifficultyLabel>
+                  <DifficultyInput
+                    name="difficulty"
+                    value="all"
+                    className="all"
+                    onClick={(e) => {
+                      getMission(originPage)
+                      setMissions([])
+                      handleSelected(e);
+                    }}
+                  />
+                  전체
+                </DifficultyLabel>
+                {difficulties?.map((item) => {
+                  return (
+                    <DifficultyLabel>
+                      <DifficultyInput
+                        name="difficulty"
+                        value={item.id}
+                        onClick={(e) => {
+                          getMissionLevel(e);
+                          handleSelected(e);
+                        }}
+                      />
+                      {item.name}
+                    </DifficultyLabel>
+                  );
+                })}
+              </DifficultyContainer>
+              {missions?.map((item) => {
+                return (
+                  <MissionList to={`/mission/${item.id}`}>
+                    <ListLeft>
+                      <MissionCate>
+                        <span>{item.category}</span>
+                      </MissionCate>
+                      <MissionName>{item.name}</MissionName>
+                    </ListLeft>
+                    <MissionScore>{item.point}</MissionScore>
+                  </MissionList>
+                );
+              })}
+            </MissionsContainer>
+          </FilterContainer>
           {missionList?.map((item) => {
             return (
               <MissionList to={`/mission/${item.id}`}>
