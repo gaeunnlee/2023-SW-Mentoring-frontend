@@ -5,6 +5,7 @@ import { Link } from "react-router-dom";
 import axios from "axios";
 import { useEffect, useState } from "react";
 import Paging from "../components/Paging";
+import { ImSearch } from "react-icons/im";
 
 const Container = styled.ul`
   display: flex;
@@ -69,7 +70,45 @@ const MissionsContainer = styled.div`
   flex-direction: column;
   gap: 10px;
 `;
-
+const SearchContainer = styled.div`
+  position: fixed;
+  bottom: 70px;
+  max-width: 480px;
+  width: 100%;
+  box-sizing: border-box;
+  padding-right: 30px;
+  z-index: 999;
+  display: flex;
+  justify-content: right;
+`;
+const SearchWrapper = styled.button`
+  background-color: #85b6e6;
+  opacity: 0.6;
+  color: #fff;
+  padding: 15px;
+  font-size: 35px;
+  width: 70px;
+  height: 70px;
+  border-radius: 100%;
+  &:hover {
+    opacity: 1;
+  }
+`;
+const SearchInputContainer = styled.form`
+  position: fixed;
+  bottom: 90px;
+  border: 0;
+  left: -10px;
+  width: 100%;
+  box-sizing: border-box;
+  z-index: 999;
+  display: flex;
+  justify-content: center;
+`;
+const SearchTextInput = styled.input`
+  padding: 5px;
+`;
+const SearchSubmitInput = styled.input``;
 interface MissionListProps {
   bonusList: [];
   category: string;
@@ -97,8 +136,8 @@ export default function Mission() {
   const [missionList, setMissionList] = useState<MissionListProps[]>();
   const [difficulties, getDifficulties] = useState<DifficultiesProps[]>();
   const [missions, setMissions] = useState<MissionListProps[]>();
-  const [showPage, setShowPage] = useState(true)
-  const [originPage, setOriginPage] = useState(1)
+  const [showPage, setShowPage] = useState(true);
+  const [originPage, setOriginPage] = useState(1);
   const [pageInfo, setPageInfo] = useState<PageProps>({
     pageSize: 0,
     totalElements: 0,
@@ -148,14 +187,14 @@ export default function Mission() {
   };
   const handlePageClick = (event: any) => {
     getMission(event.selected + 1);
-    setOriginPage(event.selected + 1)
+    setOriginPage(event.selected + 1);
     return undefined;
   };
 
   const handleSelected = (
     e: React.MouseEvent<HTMLInputElement, MouseEvent>
   ) => {
-    const input = e.currentTarget
+    const input = e.currentTarget;
     const inputName = e.currentTarget.name;
     const originSelected = document.querySelectorAll(`.${inputName}Selected`);
     setMissionList([]);
@@ -165,10 +204,10 @@ export default function Mission() {
     e.currentTarget.parentElement?.classList.add(`${inputName}Selected`);
     setInputDefault(false);
     if (inputName === "difficulty") {
-      if (input.className.indexOf("all") < 0 ) {
-        setShowPage(false)
+      if (input.className.indexOf("all") < 0) {
+        setShowPage(false);
       } else {
-        setShowPage(true)
+        setShowPage(true);
       }
       if (document.querySelectorAll(".missionSelected").length > 0) {
         document
@@ -177,6 +216,16 @@ export default function Mission() {
       }
     }
   };
+
+  const handleSearch = (event: React.MouseEvent<HTMLInputElement, MouseEvent>) => {
+    event.preventDefault()
+    axios({
+      method: "get",
+      url: `/missions/search/"타기"?page=1&size=300`,
+    }).then(function (response) {
+      setMissionList(response.data.content);
+    });
+  }
 
   return (
     <>
@@ -197,8 +246,8 @@ export default function Mission() {
                     value="all"
                     className="all"
                     onClick={(e) => {
-                      getMission(originPage)
-                      setMissions([])
+                      getMission(originPage);
+                      setMissions([]);
                       handleSelected(e);
                     }}
                   />
@@ -249,6 +298,15 @@ export default function Mission() {
             );
           })}
         </Container>
+        {/* <SearchContainer>
+          <SearchWrapper>
+            <ImSearch />
+          </SearchWrapper>
+        </SearchContainer>
+        <SearchInputContainer>
+          <SearchTextInput type="text" />
+          <SearchSubmitInput type="submit" onClick={(e)=>{handleSearch(e)}} />
+        </SearchInputContainer> */}
       </Block>
     </>
   );

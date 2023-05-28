@@ -10,7 +10,8 @@ import { useRecoilValue } from "recoil";
 import { LoginStateAtom } from "../state/LoginState";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-
+import Loading from "../components/Loading";
+  
 const Form = styled.form`
   padding: 15px 5px;
 `;
@@ -251,6 +252,7 @@ export default function Post() {
   });
   const [difficulties, getDifficulties] = useState<DifficultiesProps[]>();
   const [missions, setMissions] = useState<MissionsProps[]>()
+  const [loading, setLoading] = useState(false)
   const [selectedMission, setSelectedMission] = useState<selectedMissionProps>({
     id: 0,
     name: ''
@@ -280,21 +282,9 @@ export default function Post() {
       getDifficulties(response.data);
     });
   }, []);
-  const submitHandler = (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-  };
-  // const {
-  //   register,
-  //   handleSubmit,
-  //   formState: { errors },
-  //   trigger,
-  // } = useForm<FormProps>({
-  //   mode: "onChange",
-  //   resolver: yupResolver(schema),
-  // });
   const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    
+    setLoading(true)
     if (inputState.title.length === 0) {
       alert("제목을 입력해주세요");
     } else if (inputState.body.length === 0) {
@@ -313,6 +303,7 @@ export default function Post() {
         },
         data: form,
       }).then((response) => {
+        setLoading(false)
         alert("글이 등록되었습니다")
         navigate("/")
       });
@@ -364,6 +355,7 @@ export default function Post() {
     <>
       <Banner title="글쓰기" prev />
       <Block>
+        {loading&&<Loading/>}
         <Form id="form" onSubmit={(event) => onSubmit(event)}>
           <InputContainer>
             <Label>미션</Label>

@@ -235,7 +235,7 @@ export default function Home() {
                 <Content>
                   <ContentTeam>{item.teamName}</ContentTeam>
                   <ContentTitle>{item.title}</ContentTitle>
-                  <ContentLink to={`/post/${item.id}`} state={{imgIds: item.registerFiles}}>더보기</ContentLink>
+                  <ContentLink to={`/post/${item.id}`} state={{imgIds: item.registerFiles}}> 더보기</ContentLink>
                 </Content>
                 <ContentDate>
                   {`${item.date.slice(0, 4)}년 ${item.date.slice(
