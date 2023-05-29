@@ -103,7 +103,14 @@ const ContentTeam = styled.span`
   margin-right: 7px;
 `;
 const ContentTitle = styled.span``;
-const ContentLink = styled(Link)``;
+const ContentLink = styled.button`
+  padding: 0;
+  margin-left: 4px;
+  font-size: 16px;
+  &:hover{
+    cursor: pointer;
+  }
+`;
 const ContentDate = styled.p`
   margin-top: 2px;
   font-size: 15px;
@@ -118,6 +125,7 @@ interface PostProps {
   title: string;
   totalScore: number;
   registerFiles: [];
+  body: string;
 }
 
 interface PageProps {
@@ -176,7 +184,21 @@ export default function Home() {
     getPost(event.selected + 1);
     return undefined;
   };
-
+  const getContent = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+    const target = event.currentTarget
+    const postId = target.value
+    const parentElement = target.parentElement
+    axios({
+      method: "get",
+      url: `/register/${postId}/view`,
+      headers: {
+        Authorization: `Bearer ${token.accessToken}`,
+      },
+    }).then(function (response) {
+      parentElement?.append(`\n${response.data.body}`)
+      target.remove()
+    });
+  }
   return (
     <>
       <HomeBanner />
@@ -235,7 +257,7 @@ export default function Home() {
                 <Content>
                   <ContentTeam>{item.teamName}</ContentTeam>
                   <ContentTitle>{item.title}</ContentTitle>
-                  <ContentLink to={`/post/${item.id}`} state={{imgIds: item.registerFiles}}> 더보기</ContentLink>
+                  <ContentLink value={item.id} onClick={(e)=>getContent(e)}> 더보기</ContentLink>
                 </Content>
                 <ContentDate>
                   {`${item.date.slice(0, 4)}년 ${item.date.slice(

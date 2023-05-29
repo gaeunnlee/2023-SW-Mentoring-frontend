@@ -202,20 +202,7 @@ const ErrorMsg = styled.p`
   font-size: 15px;
   color: #cf3939;
 `;
-// const schema = yup
-//   .object({
-//     studentId: yup
-//       .string()
-//       .required("*학번을 입력해주세요")
-//       .test(
-//         "len",
-//         "*8자리 숫자를 입력해주세요",
-//         (val) => val?.toString().length >= 8
-//       )
-//       .matches(/^[0-9]+(?:\.[a-zA-Z0-9-]+)*$/, "*8자리 숫자를 입력해주세요"),
-//     password: yup.string().required("*비밀번호를 입력해주세요"),
-//   })
-//   .required();
+
 type FormProps = {
   title: string;
   body: string;
