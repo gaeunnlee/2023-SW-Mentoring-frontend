@@ -11,7 +11,7 @@ import { LoginStateAtom } from "../state/LoginState";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Loading from "../components/Loading";
-  
+
 const Form = styled.form`
   padding: 15px 5px;
 `;
@@ -66,7 +66,7 @@ const DifficultyContainer = styled.div`
   margin: 20px 0 10px;
   display: flex;
   gap: 10px;
-`
+`;
 const DifficultyLabel = styled.label`
   cursor: pointer;
   border: solid 2px #b2dd94;
@@ -74,16 +74,16 @@ const DifficultyLabel = styled.label`
   padding: 8px;
   border-radius: 5px;
   &.difficultySelected {
-    background-color: #b2dd94; 
+    background-color: #b2dd94;
   }
 `;
 const DifficultyInput = styled.input.attrs({ type: "radio" })`
   display: none;
 `;
 const MissionsContainer = styled.div`
-  height: 100px;
-  overflow-y: scroll;
-`
+  max-height: 100px;
+  overflow-y: auto;
+`;
 const MissionLabel = styled.label`
   display: block;
   cursor: pointer;
@@ -91,17 +91,17 @@ const MissionLabel = styled.label`
   &.missionSelected span {
     padding: 3px 5px;
     border-radius: 3px;
-    background-color: #b2dd94; 
+    background-color: #b2dd94;
   }
   span:hover {
     padding: 3px 5px;
     border-radius: 3px;
-    background-color: #e8ffd8; 
+    background-color: #e8ffd8;
   }
-`
-const MissionInput = styled.input.attrs({ type: "radio"})`
+`;
+const MissionInput = styled.input.attrs({ type: "radio" })`
   display: none;
-`
+`;
 const FileContainer = styled.div``;
 const FileUploadWrapper = styled.div`
   margin-top: 20px;
@@ -172,10 +172,33 @@ const FileUploadBtn = styled.input.attrs({ type: "file" })`
 `;
 const UploadedFileContainer = styled.div`
   font-size: 12px;
-`
-const UploadedFileItem = styled.p`
-  
-`
+  display: flex;
+  gap: 10px;
+  width: 100%;
+  overflow-x: auto;
+  &::-webkit-scrollbar {
+    height: 50px;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    border-top: solid 20px transparent;
+    border-bottom: solid 20px transparent;
+    border-radius: 10px;
+    box-shadow: inset 0 0 20px 20px #ffdc89;
+  }
+
+  &::-webkit-scrollbar-track {
+    box-shadow: inset 0 0 20px 20px #dedede;
+    border-top: solid 20px transparent;
+    border-bottom: solid 20px transparent;
+  }
+`;
+
+const UploadedFileItem = styled.img`
+  width: 50px;
+  height: 50px;
+  border-radius: 5px;
+`;
 const PostBtn = styled.input.attrs({ type: "submit" })`
   cursor: pointer;
   display: flex;
@@ -216,13 +239,13 @@ interface DifficultiesProps {
 }
 
 interface MissionsProps {
-  bonusList:[];
-  category:string;
-  description:string;
-  id:number;
-  info:string;
-  name:string;
-  point:number;
+  bonusList: [];
+  category: string;
+  description: string;
+  id: number;
+  info: string;
+  name: string;
+  point: number;
 }
 interface selectedMissionProps {
   id: number;
@@ -238,29 +261,31 @@ export default function Post() {
     missionId: 0,
   });
   const [difficulties, getDifficulties] = useState<DifficultiesProps[]>();
-  const [missions, setMissions] = useState<MissionsProps[]>()
-  const [loading, setLoading] = useState(false)
+  const [missions, setMissions] = useState<MissionsProps[]>();
+  const [loading, setLoading] = useState(false);
   const [selectedMission, setSelectedMission] = useState<selectedMissionProps>({
     id: 0,
-    name: ''
+    name: "",
   });
-  const [inputDefault, setInputDefault] = useState(false)
-  const [filesArray, setFilesArray] = useState([''])
-  const [form, setForm] = useState<FormData>()
+  const [inputDefault, setInputDefault] = useState(false);
+  const [filesArray, setFilesArray] = useState([""]);
+  const [form, setForm] = useState<FormData>();
   const navigate = useNavigate();
-  const getMission = (event: React.MouseEvent<HTMLInputElement, MouseEvent>) => {
-    const selected = event.currentTarget.value
+  const getMission = (
+    event: React.MouseEvent<HTMLInputElement, MouseEvent>
+  ) => {
+    const selected = event.currentTarget.value;
     axios({
       method: "get",
       url: `/missions/difficulty/${selected}?page=1&size=100`,
     }).then(function (response) {
-      setMissions(response.data.content)
+      setMissions(response.data.content);
     });
-  }
+  };
   const formData = new FormData();
   useEffect(() => {
     if (!(token.accessToken.length > 0)) {
-      navigate("/login")
+      navigate("/login");
     }
     axios({
       method: "get",
@@ -271,13 +296,12 @@ export default function Post() {
   }, []);
   const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    setLoading(true)
+    setLoading(true);
     if (inputState.title.length === 0) {
       alert("제목을 입력해주세요");
     } else if (inputState.body.length === 0) {
       alert("내용을 입력해주세요");
-    }
-    else if (selectedMission.id === 0) {
+    } else if (selectedMission.id === 0) {
       alert("미션을 선택해주세요");
     }
     try {
@@ -290,9 +314,9 @@ export default function Post() {
         },
         data: form,
       }).then((response) => {
-        setLoading(false)
-        alert("글이 등록되었습니다")
-        navigate("/")
+        setLoading(false);
+        alert("글이 등록되었습니다");
+        navigate("/");
       });
     } catch (e) {
       console.log(e);
@@ -311,86 +335,90 @@ export default function Post() {
     }));
   };
   const handleFile = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setFilesArray([])
+    setFilesArray([]);
     const files = Array.from(e.target.files || []);
-    console.log(files)
+    console.log(files);
     files.forEach((f, index) => {
-      setFilesArray( prev => [...prev, f.name])
-      formData.append("files",f)
+      setFilesArray((url) => [...url, URL.createObjectURL(f)]);
+      formData.append("files", f);
     });
-    formData.append("title",inputState.title)
-    formData.append("body",inputState.body)
-    setForm(formData)
+    formData.append("title", inputState.title);
+    formData.append("body", inputState.body);
+    setForm(formData);
   };
 
-  const handleSelected = (e:React.MouseEvent<HTMLInputElement, MouseEvent>) => {
-    const inputName = e.currentTarget.name
+  const handleSelected = (
+    e: React.MouseEvent<HTMLInputElement, MouseEvent>
+  ) => {
+    const inputName = e.currentTarget.name;
     const originSelected = document.querySelectorAll(`.${inputName}Selected`);
-    if (originSelected.length >= 1 ) {
-        originSelected[0].classList.remove(`${inputName}Selected`)
+    if (originSelected.length >= 1) {
+      originSelected[0].classList.remove(`${inputName}Selected`);
     }
-    e.currentTarget.parentElement?.classList.add(`${inputName}Selected`)
-    setInputDefault(false)
-    if ( inputName === "difficulty" ) {
+    e.currentTarget.parentElement?.classList.add(`${inputName}Selected`);
+    setInputDefault(false);
+    if (inputName === "difficulty") {
       if (document.querySelectorAll(".missionSelected").length > 0) {
-        document.querySelectorAll(".missionSelected")[0].classList.remove("missionSelected")
+        document
+          .querySelectorAll(".missionSelected")[0]
+          .classList.remove("missionSelected");
       }
     }
-  }
-  
+  };
+
   return (
     <>
       <Banner title="글쓰기" prev />
       <Block>
-        {loading&&<Loading/>}
+        {loading && <Loading />}
         <Form id="form" onSubmit={(event) => onSubmit(event)}>
           <InputContainer>
             <Label>미션</Label>
-            <Input 
-              name="missionId" 
+            <Input
+              name="missionId"
               onChange={onInputHandler}
               placeholder="아래 난이도를 눌러 선택해주세요"
               value={selectedMission.name}
               disabled
             />
             <DifficultyContainer>
-            {difficulties?.map((item) => {
-              return (
-                <DifficultyLabel>
-                  <DifficultyInput 
-                    name="difficulty" 
-                    value={item.id} 
-                    onClick={(e) => {
-                      getMission(e)
-                      handleSelected(e)
-                    }}
-                  />
-                  {item.name}
-                </DifficultyLabel>
-              );
-            })}
+              {difficulties?.map((item) => {
+                return (
+                  <DifficultyLabel>
+                    <DifficultyInput
+                      name="difficulty"
+                      value={item.id}
+                      onClick={(e) => {
+                        getMission(e);
+                        handleSelected(e);
+                      }}
+                    />
+                    {item.name}
+                  </DifficultyLabel>
+                );
+              })}
             </DifficultyContainer>
             <MissionsContainer>
-              { missions?.map( (item) => { return (
-                <MissionLabel>
-                  <MissionInput 
-                    name="mission"
-                    className="mission"
-                    value={`${item.id}&${item.name}`}
-                    checked={inputDefault}
-                    onClick={(e) => {
-                      handleSelected(e)
-                      setSelectedMission({
-                        id: Number(e.currentTarget.value.split('&')[0]),
-                        name: e.currentTarget.value.split('&')[1]
-                      })
-                    }}
-                  />
-                  <span>
-                    {item.name}
-                  </span>
-                </MissionLabel>
-              )})}
+              {missions?.map((item) => {
+                return (
+                  <MissionLabel>
+                    <MissionInput
+                      name="mission"
+                      className="mission"
+                      value={`${item.id}&${item.name}`}
+                      checked={inputDefault}
+                      onClick={(e) => {
+                        handleSelected(e);
+                        setSelectedMission({
+                          id: Number(e.currentTarget.value.split("&")[0]),
+                          name: e.currentTarget.value.split("&")[1],
+                        });
+                      }}
+                    />
+                    <span>{item.name}</span>
+                  </MissionLabel>
+                );
+              })}
             </MissionsContainer>
           </InputContainer>
           <InputContainer>
@@ -407,9 +435,9 @@ export default function Post() {
               <AiOutlineCloudUpload />
               <FileUploadText>인증 사진을 업로드해주세요!</FileUploadText>
               <UploadedFileContainer>
-                {filesArray.map(item => {return(
-                  <UploadedFileItem>{item}</UploadedFileItem>
-                )})}
+                {filesArray[0]===""||filesArray.map((item) => {
+                  return <UploadedFileItem src={item} />;
+                })}
               </UploadedFileContainer>
               <FileUploadLabel htmlFor="upload">
                 +
