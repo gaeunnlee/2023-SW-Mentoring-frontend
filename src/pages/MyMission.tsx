@@ -203,7 +203,7 @@ export default function MyMission() {
                     (function(){
                       let imgUrl : string[] = []
                       item.registerFiles.forEach((imgId)=>{
-                        imgUrl.push(`http://193.123.241.9/register/image/${imgId}`)
+                        imgUrl.push(`http://dku-mentor.site/register/image/${imgId}`)
                       })
                       return(imgUrl)
                     })()
