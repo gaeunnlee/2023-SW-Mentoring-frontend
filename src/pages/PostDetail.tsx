@@ -1,23 +1,25 @@
 import styled from "styled-components";
-import Banner from "../components/Banner/Banner";
 import Block from "../components/Block";
+import HomeBanner from "../components/Banner/HomeBanner";
+import { useEffect, useState } from "react";
 import SimpleImageSlider from "react-simple-image-slider";
 import { HiUserCircle } from "react-icons/hi";
 import { AiFillCheckCircle } from "react-icons/ai";
 import { BsClockHistory } from "react-icons/bs";
 import { TbHeartPlus } from "react-icons/tb";
-import { Link, useLocation } from "react-router-dom";
 import axios from "axios";
-import { LoginStateAtom } from "../state/LoginState";
 import { useRecoilValue } from "recoil";
-import { useEffect, useState } from "react";
+import { LoginStateAtom } from "../state/LoginState";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
+import { Link } from "react-router-dom";
+import Paging from "../components/Paging";
+import Banner from "../components/Banner/Banner";
 
 const Card = styled.div`
   display: flex;
   flex-direction: column;
   background-color: #f2f2f2;
   border-radius: 10px;
-  margin: 10px 0;
 `;
 const TopContainer = styled.div`
   padding: 20px 10px 10px 10px;
@@ -37,6 +39,7 @@ const TextContainer = styled.div`
   flex-direction: column;
   justify-content: center;
   gap: 4px;
+  width: 100%;
 `;
 
 const TeamName = styled.span`
@@ -44,10 +47,18 @@ const TeamName = styled.span`
   font-weight: bold;
 `;
 const Mission = styled.div`
+  width: 100%;
   display: flex;
   gap: 5px;
   font-size: 14px;
   flex-direction: row !important;
+  align-items: center;
+  justify-content: space-between;
+`;
+
+const MissionContainer = styled.div`
+  display: flex;
+  gap: 7px;
   align-items: center;
 `;
 const MissionStatus = styled.span`
@@ -101,7 +112,9 @@ const ContentTeam = styled.span`
   margin-right: 7px;
 `;
 const ContentTitle = styled.span``;
-const ContentBody = styled.p``;
+const ContentBody = styled.p`
+  line-height: 125%;
+`;
 const ContentDate = styled.p`
   margin-top: 2px;
   font-size: 15px;
@@ -124,33 +137,40 @@ interface PostProps {
   totalPoint: number;
 }
 
-interface RouteState{
+interface RouteState {
   imgIds: [];
 }
 
 export default function PostDetail() {
   const [post, setPost] = useState<PostProps>();
-  const token = useRecoilValue(LoginStateAtom);
+  const [loading, setLoading] = useState(true)
+  const [images, setImages] = useState<string[]>([]);
   const location = useLocation();
   let imgUrl: string[] = [];
-  console.log(location)
+    
 
-  useEffect(() => {
-    const postId = Number(location.pathname.split("/")[2]);
-    getPost(postId);
-  }, []);
   const getPost = (postId: number) => {
     axios({
       method: "get",
       url: `/register/${postId}/view`,
-      headers: {
-        Authorization: `Bearer ${token.accessToken}`,
-      },
     }).then(function (response) {
-      console.log(response.data);
       setPost(response.data);
+      response.data.registerFiles.forEach((id: number) => {
+        setImages((prev) => {
+            setLoading(false)
+            return (
+                [...prev, `http://dku-mentor.site/register/image/${id}`]
+            )
+          });
+        
+      });
     });
   };
+  useEffect(() => {
+    const postId = Number(location.pathname.split("/")[2]);
+    getPost(postId);
+  }, []);
+
   return (
     <>
       <Banner title="글 상세보기" prev />
@@ -179,21 +199,14 @@ export default function PostDetail() {
             </TextContainer>
           </TopContainer>
           <ImgContainer>
-            <SimpleImageSlider
+            {!loading && <SimpleImageSlider
               width={300}
               height={300}
-              images={(function () {
-                let imgUrl: string[] = [];
-                location.state.forEach((imgId: number) => {
-                  imgUrl.push(
-                    `http://dku-mentor.site/register/image/${imgId}`
-                  );
-                });
-                return imgUrl;
-              })()}
+              images={images}
               showBullets={true}
-              showNavs={true}
+              showNavs={images.length > 1}
             />
+            }
           </ImgContainer>
           <ContentContainer>
             <ScoreContainer>

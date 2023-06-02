@@ -54,6 +54,16 @@ const Text = styled.span`
   font-size: 25px;
   color: #333;
 `;
+const DevContainer = styled.div`
+  display: flex;
+  justify-content: center;
+  padding-top: 20px;
+`
+const Developers = styled(Link)`
+  text-align: center;
+  font-size: 14px;
+  color: #979797;
+`
 
 export default function Setting() {
   const loginInfo = useRecoilValue(LoginStateAtom);
@@ -112,6 +122,9 @@ export default function Setting() {
             </>
           )}
         </Container>
+        <DevContainer>
+        <Developers to="/developers">만든사람들</Developers>
+        </DevContainer>
       </Block>
     </>
   );

@@ -6,7 +6,7 @@ import Banner from "../components/Banner/Banner";
 import Block from "../components/Block";
 import axios from "axios";
 import { useEffect, useState } from "react";
-import { useRecoilState } from "recoil";
+import { useRecoilState, useRecoilValue } from "recoil";
 import { LoginStateAtom } from "../state/LoginState";
 import { useNavigate } from "react-router-dom";
 import { LoginProps } from "../props/LoginProps";
@@ -67,9 +67,9 @@ const schema = yup
     currentPw: yup.string().required("*비밀번호를 입력해주세요"),
     password: yup.string().required("*비밀번호를 입력해주세요"),
     passwordCheck: yup
-    .string()
-    .required("*비밀번호를 입력해주세요")
-    .oneOf([yup.ref('password')], '*일치하지 않습니다')
+      .string()
+      .required("*비밀번호를 입력해주세요")
+      .oneOf([yup.ref("password")], "*일치하지 않습니다"),
   })
   .required();
 type FormProps = {
@@ -78,10 +78,16 @@ type FormProps = {
   passwordCheck: string;
 };
 export default function LostPw() {
-  const [ currentPw, setCurrentPw ] = useState("");
-  const [ password, setPassword ] = useState("");
-  const [ passwordCheck, setPasswordCheck ] = useState("");
-  const [ loginState, setLoginState ] = useRecoilState(LoginStateAtom)
+  const token = useRecoilValue(LoginStateAtom);
+  const [inputState, setInputState] = useState<FormProps>({
+    currentPw: "",
+    password: "",
+    passwordCheck: "",
+  });
+  const [currentPw, setCurrentPw] = useState("");
+  const [password, setPassword] = useState("");
+  const [passwordCheck, setPasswordCheck] = useState("");
+  const [loginState, setLoginState] = useRecoilState(LoginStateAtom);
   const navigate = useNavigate();
   const {
     register,
@@ -102,30 +108,66 @@ export default function LostPw() {
         },
         data: loginData,
       });
-      setLoginState(data)
-      setLoginState( (prev: LoginProps) => { return ({
-        ...prev,
-        state: true
-      })})
-      navigate('/')
+      setLoginState(data);
+      setLoginState((prev: LoginProps) => {
+        return {
+          ...prev,
+          state: true,
+        };
+      });
+      navigate("/");
     } catch (e) {
-      alert("아이디 또는 비밀번호가 잘못되었습니다")
+      alert("아이디 또는 비밀번호가 잘못되었습니다");
     }
   };
-  useEffect(()=>{
-    console.log(loginState)
-  },[loginState])
+  useEffect(() => {
+    console.log(loginState);
+  }, [loginState]);
   const onInputHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const inputName = e.target.name;
-    if (inputName === ("currentPw" || "password" || "passwordCheck")) {
-      trigger(inputName);
+
+    const { name, value } = e.target;
+
+    setInputState((prev: any) => ({
+      ...prev,
+      [name]: value,
+    }));
+    if (name === ("currentPw" || "password" || "passwordCheck")) {
+      trigger(name);
       if ("currentPw") {
-        setCurrentPw(inputName);
+        setCurrentPw(value);
       } else if ("password") {
-        setPassword(inputName);
+        setPassword(value);
       } else if ("passwordCheck") {
-        setPasswordCheck(inputName);
+        setPasswordCheck(value);
       }
+    }
+  };
+
+  const changePw = async (
+    event: React.MouseEvent<HTMLInputElement, MouseEvent>
+  ) => {
+    event.preventDefault();
+    console.log(inputState)
+    try {
+      await axios({
+        method: "patch",
+        url: `/user/change/password`,
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token.accessToken}`,
+        },
+        data: {
+          "newPassword": inputState.password,
+          "newPasswordConfirm": inputState.passwordCheck,
+          "presentPassword": inputState.currentPw
+        },
+      }).then((response) => {
+        console.log(response)
+        alert("비밀번호 변경이 완료되었습니다")
+        navigate("/")
+      });
+    } catch (e) {
+      console.log(e);
     }
   };
 
@@ -174,7 +216,12 @@ export default function LostPw() {
                 {errors.passwordCheck ? errors.passwordCheck.message : ""}
               </ErrorMsg>
             </InputContainer>
-            <LoginBtn value="변경하기" />
+            <LoginBtn
+              onClick={(e) => {
+                changePw(e);
+              }}
+              value="변경하기"
+            />
           </Form>
         </Container>
       </Block>

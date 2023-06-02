@@ -1,13 +1,12 @@
 import ReactPaginate from "react-paginate";
-import { NumberLiteralType } from "typescript";
-
 interface PagingProps {
     pageCount: number;
     handlePageClick(event:any): undefined;
-    show?: boolean;
+    show: boolean;
+    initialPage?: number;
 }
 
-export default function Paging({pageCount, handlePageClick, show}: PagingProps) {
+export default function Paging({pageCount, handlePageClick, show, initialPage}: PagingProps) {
   return (
     <ReactPaginate
     previousLabel={"←"}
@@ -21,6 +20,7 @@ export default function Paging({pageCount, handlePageClick, show}: PagingProps) 
     activeClassName={"pagination__link--active"}
     pageRangeDisplayed={4}
     marginPagesDisplayed={0}
+    initialPage={initialPage}
   />
   );
 }

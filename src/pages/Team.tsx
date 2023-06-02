@@ -70,7 +70,6 @@ export default function Team() {
       url: '/team?page=1&size=200'
     }).then(function (response){
       setTeam(response.data.content)
-      console.log(response.data.content)
     })
   },[]) 
   return (

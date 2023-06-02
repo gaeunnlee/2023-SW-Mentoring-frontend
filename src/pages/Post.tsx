@@ -296,31 +296,33 @@ export default function Post() {
   }, []);
   const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    setLoading(true);
     if (inputState.title.length === 0) {
       alert("제목을 입력해주세요");
     } else if (inputState.body.length === 0) {
       alert("내용을 입력해주세요");
     } else if (selectedMission.id === 0) {
       alert("미션을 선택해주세요");
+    } else {
+      setLoading(true);
+      try {
+        await axios({
+          method: "post",
+          url: `/register/${selectedMission.id}/register`,
+          headers: {
+            "Content-Type": "multipart/form-data",
+            Authorization: `Bearer ${token.accessToken}`,
+          },
+          data: form,
+        }).then((response) => {
+          setLoading(false);
+          alert("글이 등록되었습니다");
+          navigate("/");
+        });
+      } catch (e) {
+        console.log(e);
+      }
     }
-    try {
-      await axios({
-        method: "post",
-        url: `/register/${selectedMission.id}/register`,
-        headers: {
-          "Content-Type": "multipart/form-data",
-          Authorization: `Bearer ${token.accessToken}`,
-        },
-        data: form,
-      }).then((response) => {
-        setLoading(false);
-        alert("글이 등록되었습니다");
-        navigate("/");
-      });
-    } catch (e) {
-      console.log(e);
-    }
+
   };
 
   const onInputHandler = (

@@ -26,3 +26,5 @@ package-lock.json
 package.json
 
 .env.development
+
+src/static/images/developers

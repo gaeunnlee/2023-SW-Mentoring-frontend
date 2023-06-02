@@ -42,7 +42,18 @@ export const GlobalStyles = createGlobalStyle`
     width: 100%;
     max-width: 500px;
   }
-
+  .sliderContainer {
+    width: calc( 100vw - 40px )!important;
+    height: calc( 100vw - 60px )!important;
+    max-width: 450px!important;
+    max-height: 450px!important;
+  }
+  .rsis-container {
+    width: calc( 100vw - 40px )!important;
+    height: calc( 100vw - 60px )!important;
+    max-width: 450px!important;
+    max-height: 450px!important;
+  } 
   .sliderWrapper {
     width: calc( 100vw - 40px )!important;
     height: calc( 100vw - 60px )!important;
@@ -58,15 +69,15 @@ export const GlobalStyles = createGlobalStyle`
     height: calc( 100vw - 60px )!important;
     display: flex!important;
     max-width: 440px!important;
-    max-height: 440px!important;
+    max-height: auto!important;
     position: sticky!important;
   }
 
   .rsis-container div {
     background-position: center center!important;
-    background-size: cover!important;
     max-width: 450px!important;
-    max-height: 450px!important;
+    max-height: 450px!important;    background-size: contain !important;
+    background-repeat: no-repeat!important;
   }
 
   html, body, div, span, applet, object, iframe,

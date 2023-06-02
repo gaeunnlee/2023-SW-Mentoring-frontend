@@ -107,9 +107,10 @@ export default function MissionDetail() {
       url: `/missions/${missionId}`,
     }).then(function (response) {
       setMission(response.data);
-      console.log(response.data)
+      console.log(response.data);
     });
   }, []);
+
   return (
     <>
       <Banner title="미션상세" prev />
@@ -129,16 +130,17 @@ export default function MissionDetail() {
           <BonusTitle>
             <span>보너스 미션</span>
           </BonusTitle>
-          {mission?.bonusList?.length !== undefined   ? (
+          {mission?.bonusList?.length !== (undefined || 0)  ? (
             <>
-              
+              {console.log(mission?.bonusList?.length)}
+
               {mission?.bonusList.map((item: BonusProps) => {
-                 return(
+                return (
                   <BonusList>
-                  <BonusPoint>{item.plusPoint}</BonusPoint>
-                  <BonusName>{item.plusMission}</BonusName>
-                </BonusList>
-                 )
+                    <BonusPoint>{item.plusPoint}</BonusPoint>
+                    <BonusName>{item.plusMission}</BonusName>
+                  </BonusList>
+                );
               })}
             </>
           ) : (

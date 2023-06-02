@@ -12,6 +12,7 @@ import { useRecoilValue } from "recoil";
 import { LoginStateAtom } from "../state/LoginState";
 import { useNavigate } from "react-router-dom";
 import { get } from "http";
+import Banner from "../components/Banner/Banner";
 
 const Card = styled.div`
   display: flex;
@@ -31,7 +32,7 @@ const TopContainer = styled.div`
 `;
 const LeftContainer = styled.div`
   display: flex;
-`
+`;
 const ProfileSvg = styled.p`
   svg {
     font-size: 55px;
@@ -74,9 +75,12 @@ const Delete = styled.button`
   background-color: #fa5757;
   color: #fff;
   padding: 6px;
-  border-radius:5px;
+  border-radius: 5px;
   font-size: 15px;
-`
+  &:hover {
+    cursor: pointer
+  }
+`;
 const ImgContainer = styled.div`
   display: flex;
   width: 100%;
@@ -102,114 +106,115 @@ const ScoreContainer = styled.div`
   svg {
     font-size: 28px;
   }
-  `;
+`;
 const Score = styled.span`
   font-size: 18px;
 `;
 const Content = styled.div`
-  line-height: 25px;;
-`
+  line-height: 25px;
+`;
 const ContentTeam = styled.span`
   font-weight: bold;
   margin-right: 7px;
-`
-const ContentTitle = styled.span``
+`;
+const ContentTitle = styled.span``;
 const ContentDate = styled.p`
   margin-top: 2px;
   font-size: 15px;
   color: #8a8a8a;
-`
+`;
 interface PostProps {
-  date : string;
-  id : number;
-  missionName : string;
-  status : string;
-  teamName : string;
-  title : string;
-  totalScore : number;
-  registerFiles: [];  
+  date: string;
+  id: number;
+  missionName: string;
+  status: string;
+  teamName: string;
+  title: string;
+  totalScore: number;
+  registerFiles: [];
 }
 
 export default function MyMission() {
-  const loginInfo = useRecoilValue(LoginStateAtom)
-  const [ post, setPost ] = useState<PostProps[]>();  
-  const token = useRecoilValue(LoginStateAtom)
-  const navigate = useNavigate()
-  useEffect(()=> {
-    console.log(token.accessToken)
-    getPost()
-  },[])
+  const loginInfo = useRecoilValue(LoginStateAtom);
+  const [post, setPost] = useState<PostProps[]>();
+  const token = useRecoilValue(LoginStateAtom);
+  const navigate = useNavigate();
+  useEffect(() => {
+    getPost();
+  }, []);
   const getPost = () => {
     axios({
-      method: 'get',
-      url: `/register/my-team`,
+      method: "get",
+      url: `/register/my-team?page=1&size=100`,
       headers: {
-        Authorization: `Bearer ${token.accessToken}`
+        Authorization: `Bearer ${token.accessToken}`,
       },
-    }).then(function (response){
-      setPost(response.data.content)
-    })
-  }
-  const deletePost =  (id: number) => {
-    alert(`${id}를 삭제하겠습니까?`)
-       axios.delete(`/register/${id}`, {
-        headers: {
-          Authorization: `Bearer ${token.accessToken}`
-        }
-      }).then((response)=>{
-        alert("삭제 완료되었습니다.")
-      })
+    }).then(function (response) {
+      setPost(response.data.content);
+    });
+  };
+  const deletePost = (id: number) => {
+    if (window.confirm("해당 게시글을 삭제하겠습니까?") === true) {
+      axios
+        .delete(`/register/${id}`, {
+          headers: {
+            Authorization: `Bearer ${token.accessToken}`,
+          },
+        })
+        .then((response) => {
+          alert("삭제 완료되었습니다.");
+          getPost()
+        });
     }
-  
+  };
+
   return (
     <>
-      <HomeBanner />
+      <Banner title="내 미션현황" prev/>
       <Block>
         {post?.map((item) => {
           return (
             <Card>
               <TopContainer>
                 <LeftContainer>
-                <ProfileSvg>
-                  <HiUserCircle />
-                </ProfileSvg>
-                <TextContainer>
-                  <TeamName>{item.teamName}</TeamName>
-                  <Mission>
-                    <span>{item.missionName}</span>
-                    <MissionStatus>
-                      {item.status === "PROGRESS" ? (
-                        <ProgressStatus>
-                          <BsClockHistory />
-                        </ProgressStatus>
-                      ) : (
-                        <CompleteStatus>
-                          <AiFillCheckCircle />
-                        </CompleteStatus>
-                      )}
-                    </MissionStatus>
-                  </Mission>
-                </TextContainer>
+                  <ProfileSvg>
+                    <HiUserCircle />
+                  </ProfileSvg>
+                  <TextContainer>
+                    <TeamName>{item.teamName}</TeamName>
+                    <Mission>
+                      <span>{item.missionName}</span>
+                      <MissionStatus>
+                        {item.status === "PROGRESS" ? (
+                          <ProgressStatus>
+                            <BsClockHistory />
+                          </ProgressStatus>
+                        ) : (
+                          <CompleteStatus>
+                            <AiFillCheckCircle />
+                          </CompleteStatus>
+                        )}
+                      </MissionStatus>
+                    </Mission>
+                  </TextContainer>
                 </LeftContainer>
-                <Delete onClick={() => deletePost(item.id)}>
-                  삭제
-                </Delete>
+                <Delete onClick={() => deletePost(item.id)}>삭제</Delete>
               </TopContainer>
               <ImgContainer>
                 <SimpleImageSlider
                   width={300}
                   height={300}
-                  images={
-                    (function(){
-                      let imgUrl : string[] = []
-                      item.registerFiles.forEach((imgId)=>{
-                        imgUrl.push(`http://dku-mentor.site/register/image/${imgId}`)
-                      })
-                      return(imgUrl)
-                    })()
-                  }
+                  images={(function () {
+                    let imgUrl: string[] = [];
+                    item.registerFiles.forEach((imgId) => {
+                      imgUrl.push(
+                        `http://dku-mentor.site/register/image/${imgId}`
+                      );
+                    });
+                    return imgUrl;
+                  })()}
                   showBullets={true}
-                  showNavs={true}
+                  showNavs={item.registerFiles.length > 1}
                 />
               </ImgContainer>
               <ContentContainer>
@@ -222,7 +227,13 @@ export default function MyMission() {
                   <ContentTitle>{item.title}</ContentTitle>
                 </Content>
                 <ContentDate>
-                  {`${item.date.slice(0,4)}년 ${item.date.slice(5,7)}월 ${item.date.slice(8,10)}일 ${item.date.slice(11,13)}시 ${item.date.slice(14,16)}분`}
+                  {`${item.date.slice(0, 4)}년 ${item.date.slice(
+                    5,
+                    7
+                  )}월 ${item.date.slice(8, 10)}일 ${item.date.slice(
+                    11,
+                    13
+                  )}시 ${item.date.slice(14, 16)}분`}
                 </ContentDate>
               </ContentContainer>
             </Card>

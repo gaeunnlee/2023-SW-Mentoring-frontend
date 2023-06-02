@@ -51,6 +51,10 @@ const FilterContainer = styled.div``;
 const DifficultyContainer = styled.div`
   display: flex;
   gap: 0.8vw;
+  position: sticky;
+  top: -20px;
+  padding: 10px;
+  background-color: #f9f9f9;
 `;
 const DifficultyLabel = styled.label`
   cursor: pointer;
@@ -72,14 +76,14 @@ const MissionsContainer = styled.div`
 `;
 const SearchContainer = styled.div`
   position: fixed;
-  bottom: 70px;
+  bottom: 80px;
   max-width: 480px;
   width: 100%;
   box-sizing: border-box;
   padding-right: 30px;
-  z-index: 999;
   display: flex;
   justify-content: right;
+  z-index: 9999;
 `;
 const SearchWrapper = styled.button`
   background-color: #85b6e6;
@@ -92,23 +96,57 @@ const SearchWrapper = styled.button`
   border-radius: 100%;
   &:hover {
     opacity: 1;
+    cursor: pointer;
   }
+  z-index: 99999;
+`;
+const BlurContainer = styled.button`
+  width: 100vw;
+  height: 100vh;
+  position: fixed;
+  max-width: 480px;
+  backdrop-filter: blur(2px);
+  z-index: 99998;
 `;
 const SearchInputContainer = styled.form`
   position: fixed;
-  bottom: 90px;
   border: 0;
-  left: -10px;
   width: 100%;
+  height: 100vh;
+  bottom: 0;
   box-sizing: border-box;
-  z-index: 999;
   display: flex;
   justify-content: center;
+  align-items: center;
+  width: 100%;
+  max-width: 450px;
+  padding: 20px 0;
+
+  z-index: 999;
 `;
 const SearchTextInput = styled.input`
-  padding: 5px;
+  padding: 10px;
+  width: 180px;
+  font-size: 30px;
+  border: 5px solid #85b6e6;
+  border-radius: 5px 0px 0px 5px;
+  border-right: 0;
+  z-index: 999999;
 `;
-const SearchSubmitInput = styled.input``;
+const SearchSubmitInput = styled.input`
+  background-color: #85b6e6;
+  font-size: 13px;
+  -webkit-appearance: none;
+  -webkit-border-radius: 0;
+  border-radius: 0px 5px 5px 0px;
+  -webkit-border-radius: 0px 5px 5px 0px;
+  width: 60px;
+  color: #fff;
+  height: 60px;
+  &:hover {
+    cursor: pointer;
+  }
+`;
 interface MissionListProps {
   bonusList: [];
   category: string;
@@ -138,6 +176,8 @@ export default function Mission() {
   const [missions, setMissions] = useState<MissionListProps[]>();
   const [showPage, setShowPage] = useState(true);
   const [originPage, setOriginPage] = useState(1);
+  const [searchInput, setSearchInput] = useState("");
+  const [showSearch, setShowSearch] = useState(false);
   const [pageInfo, setPageInfo] = useState<PageProps>({
     pageSize: 0,
     totalElements: 0,
@@ -171,6 +211,7 @@ export default function Mission() {
     });
   };
   const getMission = (pageNum: number) => {
+    setMissionList([]);
     axios({
       method: "get",
       url: `/missions?page=${pageNum}&size=10`,
@@ -217,19 +258,58 @@ export default function Mission() {
     }
   };
 
-  const handleSearch = (event: React.MouseEvent<HTMLInputElement, MouseEvent>) => {
-    event.preventDefault()
+  const handleSearch = (
+    event: React.MouseEvent<HTMLInputElement, MouseEvent>
+  ) => {
+    event.preventDefault();
+    setShowSearch(false);
+    setMissions([]);
+    handleSelected(event);
     axios({
       method: "get",
-      url: `/missions/search/"타기"?page=1&size=300`,
+      url: `/missions/search?keyword=${encodeURIComponent(
+        searchInput
+      )}&page=1&size=10`,
     }).then(function (response) {
+      setShowSearch((prev) => {
+        return !prev;
+      });
       setMissionList(response.data.content);
     });
-  }
+  };
 
   return (
     <>
       <Banner title="미션" />
+      {showSearch && (
+        <BlurContainer
+          onClick={() => {
+            setShowSearch((prev) => {
+              return !prev;
+            });
+          }}
+        >
+          <SearchInputContainer>
+            <SearchTextInput
+              type="text"
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+              }}
+              onChange={(e) => {
+                setSearchInput(e.currentTarget.value);
+              }}
+            />
+            <SearchSubmitInput
+              type="submit"
+              value="검색"
+              onClick={(e) => {
+                handleSearch(e);
+              }}
+            />
+          </SearchInputContainer>
+        </BlurContainer>
+      )}
       <Block>
         <Container>
           <Paging
@@ -298,15 +378,17 @@ export default function Mission() {
             );
           })}
         </Container>
-        {/* <SearchContainer>
-          <SearchWrapper>
+        <SearchContainer>
+          <SearchWrapper
+            onClick={() => {
+              setShowSearch((prev) => {
+                return !prev;
+              });
+            }}
+          >
             <ImSearch />
           </SearchWrapper>
         </SearchContainer>
-        <SearchInputContainer>
-          <SearchTextInput type="text" />
-          <SearchSubmitInput type="submit" onClick={(e)=>{handleSearch(e)}} />
-        </SearchInputContainer> */}
       </Block>
     </>
   );

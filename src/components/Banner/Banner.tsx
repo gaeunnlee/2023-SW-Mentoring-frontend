@@ -21,6 +21,9 @@ const Prev = styled.button<{ prev?: boolean }>`
   top: 20px;
   left: 30px;
   display: ${ props => props.prev ? "block" : "none" };
+  &:hover{
+    cursor: pointer;
+  }
 `;
 const Title = styled.h1`
   font-size: 30px;

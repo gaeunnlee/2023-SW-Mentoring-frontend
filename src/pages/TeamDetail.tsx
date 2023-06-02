@@ -4,6 +4,7 @@ import Block from "../components/Block";
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { useLocation } from "react-router-dom";
+import { Link } from "react-router-dom";
 
 const Container = styled.div`
   padding: 10px 0;
@@ -62,7 +63,7 @@ const MissionTitle = styled.h2`
   margin-bottom: 15px;
   align-self: center;
 `;
-const MissionList = styled.li`
+const MissionList = styled(Link)`
   display: flex;
   line-height: 120%;
   gap: 10px;
@@ -79,32 +80,42 @@ const CheckBox = styled.div`
   vertical-align: top;
 `;
 const MissionText = styled.span`
+  display: flex;
+  justify-content: space-between;
   width: calc(100% - 30px);
   font-size: 17px;
 `;
 
+interface CompletedMissionProps {
+  missionName: string;
+  totalScore: number;
+  missionInfo: string;
+  missionCategory: string;
+  lastModifiedAt: string;
+  id: number;
+}
 interface TeamProps {
-  id: number,
-  userName_mentor: string,
-  teamName: string,
-  mentee: string,
-  score: number,
-  completedMission: [],
+  id: number;
+  userName_mentor: string;
+  teamName: string;
+  mentee: string;
+  score: number;
+  completedMission: CompletedMissionProps[];
 }
 
 export default function TeamDetail() {
   const location = useLocation().pathname;
-  const [ team, setTeam ] = useState<TeamProps>()
-  const teamId = location.split('/')[2];
-  useEffect(()=> {
+  const [team, setTeam] = useState<TeamProps>();
+  const teamId = location.split("/")[2];
+  useEffect(() => {
     axios({
-      method: 'get',
-      url: `/team/${teamId}`
-    }).then(function (response){
-      setTeam(response.data)
-    })
-  },[])
-  
+      method: "get",
+      url: `/team/${teamId}`,
+    }).then(function (response) {
+      setTeam(response.data);
+    });
+  }, []);
+
   return (
     <>
       <Banner title={team?.teamName || "null"} prev />
@@ -117,23 +128,27 @@ export default function TeamDetail() {
             </Score>
             <Member>
               <Mentor>{team?.userName_mentor}</Mentor>
-              {team?.mentee?.split(',').map(name => {return(
-                <span>{name}</span>
-              )})}
+              {team?.mentee?.split(",").map((name) => {
+                return <span>{name}</span>;
+              })}
             </Member>
           </TeamCard>
 
           <MissionCard>
             <MissionTitle>수행한 미션</MissionTitle>
-            { team?.completedMission?.length !== 0 ? 
-              team?.completedMission.map((item) => {
-                return (
-                  <MissionList>
-                    <CheckBox className="checkBox" />
-                    <MissionText>{item}</MissionText>
-                  </MissionList>
-                );
-              }) : "아직 없습니다"}
+            {team?.completedMission?.length !== 0
+              ? team?.completedMission.map((item) => {
+                  return (
+                    <MissionList to={`/post/${item.id}`}>
+                      <CheckBox className="checkBox" />
+                      <MissionText>
+                        <span>{item.missionName}</span>
+                        <span>{item.totalScore}</span>
+                      </MissionText>
+                    </MissionList>
+                  );
+                })
+              : "아직 없습니다"}
           </MissionCard>
         </Container>
       </Block>

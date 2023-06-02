@@ -10,7 +10,7 @@ import { TbHeartPlus } from "react-icons/tb";
 import axios from "axios";
 import { useRecoilValue } from "recoil";
 import { LoginStateAtom } from "../state/LoginState";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { Link } from "react-router-dom";
 import Paging from "../components/Paging";
 
@@ -39,6 +39,7 @@ const TextContainer = styled.div`
   flex-direction: column;
   justify-content: center;
   gap: 4px;
+  width: 100%;
 `;
 
 const TeamName = styled.span`
@@ -46,12 +47,20 @@ const TeamName = styled.span`
   font-weight: bold;
 `;
 const Mission = styled.div`
+  width: 100%;
   display: flex;
   gap: 5px;
   font-size: 14px;
   flex-direction: row !important;
   align-items: center;
+  justify-content: space-between;
 `;
+
+const MissionContainer = styled.div`
+  display: flex; 
+  gap: 7px;
+  align-items: center;
+`
 const MissionStatus = styled.span`
   svg {
     font-size: 18px;
@@ -103,19 +112,32 @@ const ContentTeam = styled.span`
   margin-right: 7px;
 `;
 const ContentTitle = styled.span``;
-const ContentLink = styled.button`
-  padding: 0;
-  margin-left: 4px;
-  font-size: 16px;
-  &:hover{
-    cursor: pointer;
-  }
+const ContentBody = styled.p`
+  line-height: 125%;
 `;
 const ContentDate = styled.p`
   margin-top: 2px;
   font-size: 15px;
   color: #8a8a8a;
 `;
+const AdminContainer = styled.form`
+  display: flex;
+  gap: 15px;
+`;
+const AdminScore = styled.input`
+  width: 30px;
+  &::-webkit-outer-spin-button,
+  &::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+`;
+const ScoreRegister = styled.button`
+  &:hover {
+    cursor: pointer
+  }
+`;
+
 interface PostProps {
   date: string;
   id: number;
@@ -138,7 +160,7 @@ interface PageProps {
 export default function Home() {
   const loginInfo = useRecoilValue(LoginStateAtom);
   const [post, setPost] = useState<PostProps[]>([]);
-  const [page, setPage] = useState(1);
+  const [pageNum, setPageNum] = useState(1);
   const [pageInfo, setPageInfo] = useState<PageProps>({
     pageSize: 0,
     totalElements: 0,
@@ -148,26 +170,30 @@ export default function Home() {
   const limit = 5;
   const token = useRecoilValue(LoginStateAtom);
   const location = useLocation();
-  
+  let currentPage = Number(location.search.split("=")[1]);
   const navigate = useNavigate();
+  const [score, setScore] = useState(0)
+
   useEffect(() => {
-    if (!(token.accessToken.length > 0)) {
-      navigate("/login");
+    if (isNaN(currentPage)) {
+      getPost(1);
+    } else {
+      getPost(Number(currentPage));
     }
-    const pageNum = location.search.split("?page=")[1];
-    getPost(Number(pageNum));
   }, [location]);
   useEffect(() => {
-    getPost(1);
+    getPost(Number(currentPage));
   }, []);
 
   const getPost = (pageNum: number) => {
+    setPost([])
+    if (isNaN(pageNum)) {
+      pageNum = 1;
+    }
     axios({
       method: "get",
       url: `/register?page=${pageNum}&size=${limit}`,
-      headers: {
-        Authorization: `Bearer ${token.accessToken}`,
-      },
+
     }).then(function (response) {
       setPageInfo((prev: any) => ({
         ...prev,
@@ -176,29 +202,50 @@ export default function Home() {
         totalPages: response.data.totalPages,
         pageNumber: response.data.pageNumber,
       }));
-      setPage(response.data.pageNumber);
+      setPageNum(response.data.pageNumber);
       setPost(response.data.content);
     });
   };
   const handlePageClick = (event: any) => {
+    navigate(`?page=${event.selected + 1}`);
+    
     getPost(event.selected + 1);
     return undefined;
   };
-  const getContent = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
-    const target = event.currentTarget
-    const postId = target.value
-    const parentElement = target.parentElement
-    axios({
-      method: "get",
-      url: `/register/${postId}/view`,
-      headers: {
-        Authorization: `Bearer ${token.accessToken}`,
-      },
-    }).then(function (response) {
-      parentElement?.append(`\n${response.data.body}`)
-      target.remove()
+
+  const getImages = (files: any) => {
+    let imgUrl: string[] = [];
+    files.forEach((imgId: number) => {
+      imgUrl.push(`http://dku-mentor.site/register/image/${imgId}`);
     });
+    return imgUrl;
+  };
+  const getThumbHeight = (imgId: any) => {
+    return (`http://dku-mentor.site/register/image/${imgId}`);
+  };
+  const handleScore = async(scoreNum: number, postId: number) => {
+      try {
+        await axios({
+          method: "patch",
+          url: `/register/${postId}/approve`,
+          headers: {
+            Authorization: `Bearer ${token.accessToken}`,
+          },
+          data: {
+            "adminBonusPoint": scoreNum
+          },
+        }).then((response) => {
+          alert("승인이 완료되었습니다.")
+          setPost([])
+          getPost(1)
+        });
+      } catch (e) {
+        console.log(e);
+      }
+
   }
+
+  useEffect(() => {}, [handlePageClick]);
   return (
     <>
       <HomeBanner />
@@ -206,6 +253,8 @@ export default function Home() {
         <Paging
           pageCount={pageInfo.totalPages}
           handlePageClick={handlePageClick}
+          show={true}
+          initialPage={isNaN(currentPage - 1) ? 0 : currentPage - 1}
         />
         {post?.map((item) => {
           return (
@@ -217,47 +266,51 @@ export default function Home() {
                 <TextContainer>
                   <TeamName>{item.teamName}</TeamName>
                   <Mission>
-                    <span>{item.missionName}</span>
-                    <MissionStatus>
-                      {item.status === "PROGRESS" ? (
-                        <ProgressStatus>
-                          <BsClockHistory />
-                        </ProgressStatus>
-                      ) : (
-                        <CompleteStatus>
-                          <AiFillCheckCircle />
-                        </CompleteStatus>
-                      )}
-                    </MissionStatus>
+                    <MissionContainer>
+                      <span>{item.missionName}</span>
+                      <MissionStatus>
+                        {item.status === "PROGRESS" ? (
+                          <ProgressStatus>
+                            <BsClockHistory />
+                          </ProgressStatus>
+                        ) : (
+                          <CompleteStatus>
+                            <AiFillCheckCircle />
+                          </CompleteStatus>
+                        )}
+                      </MissionStatus>
+                    </MissionContainer>
+                    {(token.name === "관리자") && (
+                      <ScoreRegister onClick={() => {
+                        const score = prompt('점수를 입력해주세요', '')
+                        if (score !== null) {
+                          handleScore(Number(score), item.id)
+                        }
+                    }}>승인</ScoreRegister>
+                    )}
                   </Mission>
                 </TextContainer>
               </TopContainer>
               <ImgContainer>
                 <SimpleImageSlider
                   width={300}
-                  height={300}
-                  images={(function () {
-                    let imgUrl: string[] = [];
-                    item.registerFiles.forEach((imgId) => {
-                      imgUrl.push(
-                        `http://dku-mentor.site/register/image/${imgId}`
-                      );
-                    });
-                    return imgUrl;
-                  })()}
+                  height={getThumbHeight(Array.from(item.registerFiles)[0])}
+                  images={getImages(item.registerFiles)}
                   showBullets={true}
-                  showNavs={true}
+                  showNavs={item.registerFiles.length > 1}
                 />
               </ImgContainer>
               <ContentContainer>
                 <ScoreContainer>
                   <TbHeartPlus />
-                  <Score>{item.totalScore}점 획득</Score>
+                  <Score>{item.totalScore}점</Score>
                 </ScoreContainer>
                 <Content>
                   <ContentTeam>{item.teamName}</ContentTeam>
                   <ContentTitle>{item.title}</ContentTitle>
-                  <ContentLink value={item.id} onClick={(e)=>getContent(e)}> 더보기</ContentLink>
+                  <ContentBody>
+                    {item.body}
+                  </ContentBody>
                 </Content>
                 <ContentDate>
                   {`${item.date.slice(0, 4)}년 ${item.date.slice(
