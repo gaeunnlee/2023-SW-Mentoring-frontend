@@ -60,7 +60,8 @@ const DifficultyLabel = styled.label`
   cursor: pointer;
   border: solid 2px #b2dd94;
   background-color: #fff;
-  padding: 8px;
+  padding: 6px;
+  font-size: 14px;
   border-radius: 5px;
   &.difficultySelected {
     background-color: #b2dd94;

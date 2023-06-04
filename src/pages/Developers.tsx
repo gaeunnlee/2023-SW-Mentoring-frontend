@@ -19,11 +19,12 @@ const Container = styled.div`
   gap: 15px;
   margin-bottom: 20px;
   height: 100px;
+  font-size: 14px;
 `;
 
 const ProfileImg = styled.div<{ image: string }>`
-  width: 100px;
-  height: 100px;
+  width: 90px;
+  height: 90px;
   border-radius: 100%;
   background-image: url(${(props) => props.image});
   background-size: cover;
@@ -35,22 +36,19 @@ const TextContainer = styled.div`
   justify-content: center;
   gap: 10px;
 `;
-const Text = styled.span`
-  font-size: 15px;
-
-  color: #333;
-`;
-const MainInfo = styled.div`
-    display: flex;
-`
 const Info = styled.div``;
 const Name = styled.p`
-    font-size: 27px;
+    font-size: 24px;
 `;
 const Dev = styled.p`
-    font-size: 17px;
     color: #8d8d8d;
 `;
+interface InfoProps  {
+    name: string;
+    major: string;
+    dev: string;
+    img: string;
+}
 const info = [
   {
     name: "이가은",
@@ -71,25 +69,32 @@ const info = [
     img: Choi,
   },
 ];
-
+const shuffleArray = (array: InfoProps[]) => {
+    for(let loop = array.length - 1; loop >= 0; loop--) {
+      let randomNum = Math.floor(Math.random() * (loop + 1));
+      let randomArrayItem = array[randomNum];
+      
+      array[randomNum] = array[loop];
+      array[loop] = randomArrayItem;
+    }
+    return array
+  }
+  
 export default function Developers() {
   return (
     <>
       <Banner title="만든 사람들" prev/>
       <Block>
-        {info.sort(() => Math.random() - 0.5).map((item) => {
+        {shuffleArray(info).map((item) => {
           return (
             <Container>
                 <ProfileImg image={item.img}></ProfileImg>
                 <TextContainer>
                   <Dev>{item.dev}</Dev>
                   <Name>{item.name}</Name>
-                  <MainInfo>
-                    
                     <Info>
-                        {item.major}
+                    {item.major}
                     </Info>
-                  </MainInfo>
                 </TextContainer>
             </Container>
           );

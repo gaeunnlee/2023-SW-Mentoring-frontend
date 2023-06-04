@@ -8,11 +8,12 @@ import { AiFillCheckCircle } from "react-icons/ai";
 import { BsClockHistory } from "react-icons/bs";
 import { TbHeartPlus } from "react-icons/tb";
 import axios from "axios";
-import { useRecoilValue } from "recoil";
+import { useRecoilState, useRecoilValue, useSetRecoilState } from "recoil";
 import { LoginStateAtom } from "../state/LoginState";
 import { useNavigate } from "react-router-dom";
 import { get } from "http";
 import Banner from "../components/Banner/Banner";
+import { LoginProps } from "../props/LoginProps";
 
 const Card = styled.div`
   display: flex;
@@ -138,20 +139,37 @@ export default function MyMission() {
   const loginInfo = useRecoilValue(LoginStateAtom);
   const [post, setPost] = useState<PostProps[]>();
   const token = useRecoilValue(LoginStateAtom);
+  const setLogin = useSetRecoilState(LoginStateAtom);
   const navigate = useNavigate();
   useEffect(() => {
     getPost();
   }, []);
   const getPost = () => {
-    axios({
-      method: "get",
-      url: `/register/my-team?page=1&size=100`,
-      headers: {
-        Authorization: `Bearer ${token.accessToken}`,
-      },
-    }).then(function (response) {
-      setPost(response.data.content);
-    });
+      axios({
+        method: "get",
+        url: `/register/my-team?page=1&size=100`,
+        headers: {
+          Authorization: `Bearer ${token.accessToken}`,
+        },
+      }).then(function (response) {
+        setPost(response.data.content);
+      }).catch((e) => {
+        if (e.message === "Network Error") {
+          alert("로그인이 만료되었습니다. 다시 로그인해주세요.")
+          setLogin((prev: LoginProps) => {
+            return {
+              state: false,
+              accessToken: "",
+              refreshToken: "",
+              name: "",
+              studentId: "",
+              teamName: "",
+            };
+          });
+          navigate("/login")          
+        }
+      })
+    ;
   };
   const deletePost = (id: number) => {
     if (window.confirm("해당 게시글을 삭제하겠습니까?") === true) {

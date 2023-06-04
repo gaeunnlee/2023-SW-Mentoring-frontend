@@ -6,11 +6,12 @@ import { useForm, SubmitHandler } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import axios from "axios";
-import { useRecoilValue } from "recoil";
+import { useRecoilValue, useSetRecoilState } from "recoil";
 import { LoginStateAtom } from "../state/LoginState";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import Loading from "../components/Loading";
+import { LoginProps } from "../props/LoginProps";
 
 const Form = styled.form`
   padding: 15px 5px;
@@ -270,6 +271,7 @@ export default function Post() {
   const [inputDefault, setInputDefault] = useState(false);
   const [filesArray, setFilesArray] = useState([""]);
   const [form, setForm] = useState<FormData>();
+  const setLogin = useSetRecoilState(LoginStateAtom);
   const navigate = useNavigate();
   const getMission = (
     event: React.MouseEvent<HTMLInputElement, MouseEvent>
@@ -284,6 +286,28 @@ export default function Post() {
   };
   const formData = new FormData();
   useEffect(() => {
+    axios({
+      method: "get",
+      url: `/register/my-team?page=1&size=100`,
+      headers: {
+        Authorization: `Bearer ${token.accessToken}`,
+      },
+    }).then(function (response) {
+    }).catch((e) => {
+      if (e.message === "Network Error") {
+        setLogin((prev: LoginProps) => {
+          return {
+            state: false,
+            accessToken: "",
+            refreshToken: "",
+            name: "",
+            studentId: "",
+            teamName: "",
+          };
+        });
+        navigate("/login")          
+      }
+    })
     if (!(token.accessToken.length > 0)) {
       navigate("/login");
     }
