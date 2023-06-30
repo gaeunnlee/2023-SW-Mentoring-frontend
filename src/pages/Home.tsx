@@ -8,11 +8,12 @@ import { AiFillCheckCircle } from "react-icons/ai";
 import { BsClockHistory } from "react-icons/bs";
 import { TbHeartPlus } from "react-icons/tb";
 import axios from "axios";
-import { useRecoilValue } from "recoil";
+import { useRecoilValue, useSetRecoilState } from "recoil";
 import { LoginStateAtom } from "../state/LoginState";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { Link } from "react-router-dom";
 import Paging from "../components/Paging";
+import { LoginProps } from "../props/LoginProps";
 
 const Card = styled.div`
   display: flex;
@@ -42,7 +43,7 @@ const TextContainer = styled.div`
   width: 100%;
 `;
 
-const TeamName = styled.span`
+const TeamName = styled(Link)`
   font-size: 17px;
   font-weight: bold;
 `;
@@ -148,6 +149,7 @@ interface PostProps {
   totalScore: number;
   registerFiles: [];
   body: string;
+  teamId: number;
 }
 
 interface PageProps {
@@ -159,6 +161,7 @@ interface PageProps {
 
 export default function Home() {
   const loginInfo = useRecoilValue(LoginStateAtom);
+  const setLogin = useSetRecoilState(LoginStateAtom);
   const [post, setPost] = useState<PostProps[]>([]);
   const [pageNum, setPageNum] = useState(1);
   const [pageInfo, setPageInfo] = useState<PageProps>({
@@ -167,12 +170,13 @@ export default function Home() {
     totalPages: 0,
     pageNumber: 0,
   });
-  const limit = 5;
+  const limit = 10;
   const token = useRecoilValue(LoginStateAtom);
   const location = useLocation();
   let currentPage = Number(location.search.split("=")[1]);
   const navigate = useNavigate();
   const [score, setScore] = useState(0)
+  const axiosUrl = (token.name === "관리자") ? "/register/progress" : "/register" 
 
   useEffect(() => {
     if (isNaN(currentPage)) {
@@ -190,21 +194,54 @@ export default function Home() {
     if (isNaN(pageNum)) {
       pageNum = 1;
     }
-    axios({
-      method: "get",
-      url: `/register?page=${pageNum}&size=${limit}`,
-
-    }).then(function (response) {
-      setPageInfo((prev: any) => ({
-        ...prev,
-        pageSize: response.data.pageSize,
-        totalElements: response.data.totalElements,
-        totalPages: response.data.totalPages,
-        pageNumber: response.data.pageNumber,
-      }));
-      setPageNum(response.data.pageNumber);
-      setPost(response.data.content);
-    });
+    if (token.name === "관리자") {
+      axios({
+        method: "get",
+        headers: {
+          Authorization: `Bearer ${token.accessToken}`
+        },
+        url: `/register/progress/?page=${pageNum}&size=${limit}`,
+      }).then(function (response) {
+        setPageInfo((prev: any) => ({
+          ...prev,
+          pageSize: response.data.pageSize,
+          totalElements: response.data.totalElements,
+          totalPages: response.data.totalPages,
+          pageNumber: response.data.pageNumber,
+        }));
+        setPageNum(response.data.pageNumber);
+        setPost(response.data.content);
+      }).catch((e) => {
+          alert("로그인이 만료되었습니다. 다시 로그인해주세요.")
+          setLogin((prev: LoginProps) => {
+            return {
+              state: false,
+              accessToken: "",
+              refreshToken: "",
+              name: "",
+              studentId: "",
+              teamName: "",
+            };
+          });
+          navigate("/login")          
+      })
+    }
+    else {
+      axios({
+        method: "get",
+        url: `/register/?page=${pageNum}&size=${limit}`,
+      }).then(function (response) {
+        setPageInfo((prev: any) => ({
+          ...prev,
+          pageSize: response.data.pageSize,
+          totalElements: response.data.totalElements,
+          totalPages: response.data.totalPages,
+          pageNumber: response.data.pageNumber,
+        }));
+        setPageNum(response.data.pageNumber);
+        setPost(response.data.content);
+      });
+    }
   };
   const handlePageClick = (event: any) => {
     navigate(`?page=${event.selected + 1}`);
@@ -264,7 +301,7 @@ export default function Home() {
                   <HiUserCircle />
                 </ProfileSvg>
                 <TextContainer>
-                  <TeamName>{item.teamName}</TeamName>
+                  <TeamName to={`/team/${item.teamId}`}>{item.teamName}</TeamName>
                   <Mission>
                     <MissionContainer>
                       <span>{item.missionName}</span>
