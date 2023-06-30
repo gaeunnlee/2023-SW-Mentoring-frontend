@@ -237,7 +237,7 @@ export default function Home() {
         }).then((response) => {
           alert("승인이 완료되었습니다.")
           setPost([])
-          getPost(1)
+          getPost(currentPage)
         });
       } catch (e) {
         console.log(e);
