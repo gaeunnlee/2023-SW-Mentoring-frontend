@@ -319,7 +319,7 @@ export default function Home() {
                     </MissionContainer>
                     {(token.name === "관리자") && (
                       <ScoreRegister onClick={() => {
-                        const score = prompt('점수를 입력해주세요', '')
+                        const score = prompt('보너스 점수를 입력해주세요 (보너스 점수 없을 시 점수 입력 없이 확인 눌러주세요)', '')
                         if (score !== null) {
                           handleScore(Number(score), item.id)
                         }
