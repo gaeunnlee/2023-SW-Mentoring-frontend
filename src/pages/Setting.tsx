@@ -51,7 +51,7 @@ const PwIcon = styled(Icon)`
   background-color: #FDF6E5;
 `;
 const Text = styled.span`
-  font-size: 25px;
+  font-size: 1.3rem;
   color: #333;
 `;
 const DevContainer = styled.div`

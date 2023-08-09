@@ -28,12 +28,12 @@ const ListLeft = styled.div`
 `;
 const MissionName = styled.p`
   margin: 3px 0 0 2px;
-  font-size: 20px;
+  font-size: 1rem;
   color: #000;
 `;
 const MissionCate = styled.div`
   padding: 10px 0;
-  font-size: 11px;
+  font-size: 0.7rem;
   span {
     background-color: #b2dd94;
     color: #fff;

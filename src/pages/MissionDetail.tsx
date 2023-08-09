@@ -26,7 +26,7 @@ const MissionCate = styled.span`
   }
 `;
 const MissionName = styled.p`
-  font-size: 35px;
+  font-size: 1.8rem;
   margin-top: 10px;
   color: #222;
 `;
@@ -51,7 +51,7 @@ const BonusList = styled.li`
   align-items: center;
 `;
 const BonusTitle = styled.span`
-  font-size: 20px;
+  font-size: 1rem;
   margin: 10px 0;
   line-height: 30px;
   span {
@@ -70,7 +70,7 @@ const CheckBox = styled.div`
   vertical-align: top;
 `;
 const BonusName = styled.p`
-  font-size: 18px;
+  font-size: 0.9rem;
   color: #222;
 `;
 const BonusPoint = styled.p`
